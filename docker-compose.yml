@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: emel-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: emel
+      POSTGRES_PASSWORD: emel
+      POSTGRES_DB: emel
+    ports:
+      - "5433:5432"          # host 5433 -> avoids clashing with strelnica's 5432
+    volumes:
+      - emel-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U emel -d emel"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  emel-pgdata:

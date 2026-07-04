@@ -1,0 +1,125 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1776331848943,
+      "tag": "0000_init",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1776345406366,
+      "tag": "0001_add-bot-log",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776345671342,
+      "tag": "0002_add-device-info",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1776353936096,
+      "tag": "0003_thick_dreadnoughts",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1776369910731,
+      "tag": "0004_even_starfox",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1776491018089,
+      "tag": "0005_add_contact_bans",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1776503598909,
+      "tag": "0006_add_booking_cancellation",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1776504733944,
+      "tag": "0007_minimize_license",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1776506395827,
+      "tag": "0008_add_user_weapons",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1776507650416,
+      "tag": "0009_add_trusted_admin_devices",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1776600000000,
+      "tag": "0010_drop_totp_columns",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1776600000001,
+      "tag": "0011_sms_scope_reminder",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1776600000002,
+      "tag": "0012_admin_receives_booking_requests",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1776600000003,
+      "tag": "0013_drop_birth_place",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1776600000004,
+      "tag": "0014_contact_form_recipients",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1776600000005,
+      "tag": "0015_booking_requests_bcc_extra",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1776600000006,
+      "tag": "0016_autopilot",
+      "breakpoints": true
+    }
+  ]
+}

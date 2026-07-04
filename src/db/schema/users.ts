@@ -1,0 +1,43 @@
+import { boolean, date, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+
+export const users = pgTable("users", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  email: text("email").notNull().unique(),
+  phoneE164: text("phone_e164").notNull().unique(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  birthDate: date("birth_date"),
+  addressStreet: text("address_street"),
+  addressCity: text("address_city"),
+  addressZip: text("address_zip"),
+  addressCountry: text("address_country").default("SK"),
+  zbrojnyPreukazNumberEncrypted: text("zbrojny_preukaz_number_encrypted"),
+  zbrojnyPreukazVerifiedAt: timestamp("zbrojny_preukaz_verified_at", { withTimezone: true }),
+  zbrojnyPreukazVerifiedBy: uuid("zbrojny_preukaz_verified_by"),
+  role: text("role", { enum: ["admin", "member"] }).notNull().default("member"),
+  receivesBookingRequests: boolean("receives_booking_requests").notNull().default(true),
+  receivesContactForm: boolean("receives_contact_form").notNull().default(false),
+  status: text("status", {
+    enum: ["invited", "pending_verification", "active", "suspended", "anonymized"],
+  })
+    .notNull()
+    .default("invited"),
+  locale: text("locale", { enum: ["sk", "hu"] }).notNull().default("sk"),
+  emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
+  phoneVerifiedAt: timestamp("phone_verified_at", { withTimezone: true }),
+  invitedBy: uuid("invited_by"),
+  invitationTokenHash: text("invitation_token_hash"),
+  invitationExpiresAt: timestamp("invitation_expires_at", { withTimezone: true }),
+  adminApprovalCodeHash: text("admin_approval_code_hash"),
+  passwordHash: text("password_hash"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+  lastLoginIp: text("last_login_ip"),
+  gdprConsentVersion: text("gdpr_consent_version"),
+  gdprConsentAt: timestamp("gdpr_consent_at", { withTimezone: true }),
+  rangeRulesConsentVersion: text("range_rules_consent_version"),
+  rangeRulesConsentAt: timestamp("range_rules_consent_at", { withTimezone: true }),
+  notesAdmin: text("notes_admin"),
+  anonymizedAt: timestamp("anonymized_at", { withTimezone: true }),
+});
