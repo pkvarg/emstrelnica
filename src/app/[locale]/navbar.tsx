@@ -9,14 +9,16 @@ import { Bell } from "lucide-react";
 
 function CrosshairIcon() {
   return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" className="text-amber-500">
-      <circle cx="14" cy="14" r="10" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="14" cy="14" r="4" stroke="currentColor" strokeWidth="1.5" />
-      <line x1="14" y1="0" x2="14" y2="6" stroke="currentColor" strokeWidth="1.5" />
-      <line x1="14" y1="22" x2="14" y2="28" stroke="currentColor" strokeWidth="1.5" />
-      <line x1="0" y1="14" x2="6" y2="14" stroke="currentColor" strokeWidth="1.5" />
-      <line x1="22" y1="14" x2="28" y2="14" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
+    <span className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-zinc-100/80 bg-zinc-900">
+      <svg width="20" height="20" viewBox="0 0 28 28" fill="none" className="text-zinc-100">
+        <circle cx="14" cy="14" r="9" stroke="currentColor" strokeWidth="1.5" />
+        <circle cx="14" cy="14" r="3.5" stroke="currentColor" strokeWidth="1.5" />
+        <line x1="14" y1="1" x2="14" y2="7" stroke="currentColor" strokeWidth="1.5" />
+        <line x1="14" y1="21" x2="14" y2="27" stroke="currentColor" strokeWidth="1.5" />
+        <line x1="1" y1="14" x2="7" y2="14" stroke="currentColor" strokeWidth="1.5" />
+        <line x1="21" y1="14" x2="27" y2="14" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    </span>
   );
 }
 
@@ -30,11 +32,11 @@ function LanguageSwitcher() {
   return (
     <Link
       href={newPath}
-      className="flex items-center gap-1 rounded border border-zinc-700 px-2.5 py-1 text-xs font-semibold tracking-wider uppercase transition-colors hover:border-amber-500/50 hover:text-amber-500"
+      className="flex items-center gap-1 rounded border border-zinc-700 px-2.5 py-1 text-xs font-semibold tracking-wider uppercase transition-colors hover:border-brand/50 hover:text-brand"
     >
-      <span className={locale === "sk" ? "text-amber-500" : "text-zinc-500"}>SK</span>
+      <span className={locale === "sk" ? "text-brand" : "text-zinc-500"}>SK</span>
       <span className="text-zinc-600">/</span>
-      <span className={locale === "hu" ? "text-amber-500" : "text-zinc-500"}>HU</span>
+      <span className={locale === "hu" ? "text-brand" : "text-zinc-500"}>HU</span>
     </Link>
   );
 }
@@ -68,7 +70,7 @@ function PendingBadge({ locale }: { locale: string }) {
   return (
     <Link
       href={`/${locale}/admin`}
-      className="flex items-center gap-1.5 rounded-md border border-amber-600/60 bg-amber-600/10 px-2.5 py-1 text-xs font-semibold text-amber-400 transition-colors hover:bg-amber-600/20"
+      className="flex items-center gap-1.5 rounded-md border border-brand/60 bg-brand/10 px-2.5 py-1 text-xs font-semibold text-brand transition-colors hover:bg-brand/20"
       title={`${count} žiadostí čaká na schválenie`}
     >
       <Bell size={14} />
@@ -90,11 +92,11 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur-md">
+    <nav className="sticky top-0 z-50 border-b border-zinc-800/60 bg-zinc-950/95 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link href={`/${locale}`} className="flex items-center gap-2.5 group">
           <CrosshairIcon />
-          <span className="font-[family-name:var(--font-bebas)] text-2xl tracking-widest text-zinc-100 group-hover:text-amber-500 transition-colors">
+          <span className="font-[family-name:var(--font-bebas)] text-xl tracking-[0.2em] text-zinc-100 group-hover:text-brand transition-colors">
             {t("appName")}
           </span>
         </Link>
@@ -104,7 +106,7 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-md px-3 py-1.5 text-sm text-zinc-400 transition-colors hover:text-zinc-100 hover:bg-zinc-800/50"
+              className="rounded-md px-3 py-1.5 text-xs font-bold uppercase tracking-[0.15em] text-zinc-300 transition-colors hover:text-brand"
             >
               {link.label}
             </Link>
@@ -117,16 +119,18 @@ export function Navbar() {
           {session?.user ? (
             <button
               onClick={() => signOut({ callbackUrl: `/${locale}/prihlasenie` })}
-              className="rounded-md bg-amber-600 px-4 py-1.5 text-sm font-semibold text-zinc-950 transition-colors hover:bg-amber-500"
+              className="inline-flex items-center gap-1.5 rounded-sm bg-brand px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-zinc-950 transition-colors hover:bg-brand/85"
             >
               {t("logout")}
+              <span aria-hidden>›</span>
             </button>
           ) : (
             <Link
               href={`/${locale}/prihlasenie`}
-              className="rounded-md bg-amber-600 px-4 py-1.5 text-sm font-semibold text-zinc-950 transition-colors hover:bg-amber-500"
+              className="inline-flex items-center gap-1.5 rounded-sm bg-brand px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-zinc-950 transition-colors hover:bg-brand/85"
             >
               {t("login")}
+              <span aria-hidden>›</span>
             </Link>
           )}
         </div>

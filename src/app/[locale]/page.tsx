@@ -4,21 +4,8 @@ import { AvailabilityCalendar } from "./availability-calendar";
 import { OpeningHoursPanel } from "./opening-hours-panel";
 import { OpenNowBadge } from "./open-now-badge";
 
-function TargetDecoration() {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-[0.03]">
-      <svg className="absolute -right-32 -top-32 h-[600px] w-[600px]" viewBox="0 0 400 400" fill="none">
-        <circle cx="200" cy="200" r="180" stroke="white" strokeWidth="1" />
-        <circle cx="200" cy="200" r="140" stroke="white" strokeWidth="1" />
-        <circle cx="200" cy="200" r="100" stroke="white" strokeWidth="1" />
-        <circle cx="200" cy="200" r="60" stroke="white" strokeWidth="1" />
-        <circle cx="200" cy="200" r="20" stroke="white" strokeWidth="2" />
-        <line x1="200" y1="0" x2="200" y2="400" stroke="white" strokeWidth="0.5" />
-        <line x1="0" y1="200" x2="400" y2="200" stroke="white" strokeWidth="0.5" />
-      </svg>
-    </div>
-  );
-}
+const HERO_IMAGE =
+  "https://images.unsplash.com/photo-1595590424283-b8f17842773f?q=80&w=2070&auto=format&fit=crop";
 
 function RangeCard({
   title,
@@ -30,12 +17,12 @@ function RangeCard({
   icon: "50m" | "shotgun";
 }) {
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 p-8 transition-all duration-300 hover:border-amber-600/30 hover:bg-zinc-900/80">
-      <div className="absolute -right-4 -top-4 font-[family-name:var(--font-bebas)] text-[120px] leading-none text-zinc-800/30 transition-colors group-hover:text-amber-600/10">
+    <div className="group relative overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/50 p-8 transition-all duration-300 hover:border-brand/40 hover:bg-zinc-900/80">
+      <div className="absolute -right-4 -top-4 font-[family-name:var(--font-bebas)] text-[120px] italic leading-none text-zinc-800/30 transition-colors group-hover:text-brand/10">
         {icon === "50m" ? "50" : "BR"}
       </div>
       <div className="relative">
-        <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-amber-600/10 text-amber-500">
+        <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-sm bg-brand/10 text-brand">
           {icon === "50m" ? (
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <rect x="2" y="2" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
@@ -67,24 +54,43 @@ export default function HomePage() {
   const t = useTranslations();
   const locale = useLocale();
 
+  // Purely presentational: render the last word of the headline in brand yellow
+  const headline = t("landing.heroHeadline");
+  const words = headline.split(" ");
+  const headlineStart = words.slice(0, -1).join(" ");
+  const headlineEnd = words[words.length - 1];
+
   return (
     <div className="flex flex-col">
       <section className="relative overflow-hidden border-b border-zinc-800">
-        <TargetDecoration />
-        <div className="absolute inset-0 bg-gradient-to-b from-amber-950/10 via-transparent to-transparent" />
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${HERO_IMAGE})` }}
+          aria-hidden
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/85 to-zinc-950/40" aria-hidden />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950/50" aria-hidden />
+
         <div className="relative mx-auto max-w-6xl px-4 py-24 sm:py-32">
           <div className="max-w-2xl">
             <OpenNowBadge />
-            <h1 className="font-[family-name:var(--font-bebas)] text-5xl leading-[1.1] tracking-wide text-zinc-50 sm:text-7xl">
-              {t("landing.heroHeadline")}
+            <div className="mb-4 flex items-center gap-3">
+              <span className="h-px w-8 bg-brand" />
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-brand">
+                {t("landing.subtitle")}
+              </span>
+            </div>
+            <h1 className="font-[family-name:var(--font-bebas)] text-5xl italic leading-[1.0] tracking-wide sm:text-7xl">
+              <span className="text-zinc-50">{headlineStart} </span>
+              <span className="text-brand">{headlineEnd}</span>
             </h1>
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-zinc-400">
+            <p className="mt-6 max-w-lg text-lg leading-relaxed text-zinc-300">
               {t("landing.heroSub")}
             </p>
-            <div className="mt-10 flex gap-4">
+            <div className="mt-10 flex flex-wrap gap-4">
               <Link
                 href={`/${locale}/prihlasenie`}
-                className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-6 py-3 text-sm font-semibold text-zinc-950 transition-colors hover:bg-amber-500"
+                className="inline-flex items-center gap-2 rounded-sm bg-brand-red px-7 py-3.5 text-sm font-bold uppercase tracking-[0.1em] text-white shadow-lg shadow-brand-red/20 transition-colors hover:bg-brand-red/85"
               >
                 {t("landing.heroCta")}
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -93,7 +99,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href={`/${locale}/pravidla-strelnice`}
-                className="inline-flex items-center rounded-lg border border-zinc-700 px-6 py-3 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:text-zinc-100"
+                className="inline-flex items-center rounded-sm border border-zinc-600 px-7 py-3.5 text-sm font-bold uppercase tracking-[0.1em] text-zinc-200 transition-colors hover:border-brand hover:text-brand"
               >
                 {t("common.rules")}
               </Link>
@@ -106,7 +112,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-4 py-20">
           <div className="mb-10 flex items-center gap-4">
             <div className="h-px flex-1 bg-zinc-800" />
-            <h2 className="font-[family-name:var(--font-bebas)] text-3xl tracking-widest text-zinc-400">
+            <h2 className="font-[family-name:var(--font-bebas)] text-3xl italic tracking-widest text-zinc-100">
               {t("landing.rangesHeading")}
             </h2>
             <div className="h-px flex-1 bg-zinc-800" />
@@ -147,16 +153,16 @@ export default function HomePage() {
               </span>
             </div>
             <div className="flex gap-6 text-sm text-zinc-500">
-              <Link href={`/${locale}/gdpr`} className="hover:text-zinc-300 transition-colors">
+              <Link href={`/${locale}/gdpr`} className="hover:text-brand transition-colors">
                 GDPR
               </Link>
-              <Link href={`/${locale}/pravidla-strelnice`} className="hover:text-zinc-300 transition-colors">
+              <Link href={`/${locale}/pravidla-strelnice`} className="hover:text-brand transition-colors">
                 {t("common.rules")}
               </Link>
-              <Link href={`/${locale}/podmienky`} className="hover:text-zinc-300 transition-colors">
+              <Link href={`/${locale}/podmienky`} className="hover:text-brand transition-colors">
                 {t("common.terms")}
               </Link>
-              <Link href={`/${locale}/kontakt`} className="hover:text-zinc-300 transition-colors">
+              <Link href={`/${locale}/kontakt`} className="hover:text-brand transition-colors">
                 {t("common.contact")}
               </Link>
             </div>
@@ -169,9 +175,9 @@ export default function HomePage() {
               href="https://pictusweb.sk"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 font-mono tracking-wider text-zinc-500 transition-colors hover:text-amber-500"
+              className="inline-flex items-center gap-1.5 font-mono tracking-wider text-zinc-500 transition-colors hover:text-brand"
             >
-              <span className="text-amber-500/80">&lt;/&gt;</span> PICTUSWEB
+              <span className="text-brand/80">&lt;/&gt;</span> PICTUSWEB
             </a>
           </div>
         </div>
