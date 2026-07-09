@@ -103,7 +103,7 @@ export function AdminNav({ user, labels, locale }: AdminNavProps) {
   ];
 
   const externalLinks = [
-    { href: "https://umami-p00gs00gwcwo00s4k4c4kgg8.pictusweb.com/share/9XzhLLnYeCtWULx9", label: t("links.analytics") },
+    { href: "https://analytics.pictusweb.com/share/9XzhLLnYeCtWULx9", label: t("links.analytics") },
   ];
 
   return (

@@ -30,7 +30,7 @@ export function ConditionalUmami() {
   return (
     <Script
       defer
-      src="https://umami-p00gs00gwcwo00s4k4c4kgg8.pictusweb.com/script.js"
+      src="https://analytics.pictusweb.com/script.js"
       data-website-id="ecd53fd2-60e7-4545-b466-b03a621773de"
     />
   );
