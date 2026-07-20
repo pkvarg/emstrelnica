@@ -41,7 +41,7 @@ export async function requestPasswordReset(
     expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1h
   });
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:5001";
   const resetUrl = `${appUrl}/sk/reset-hesla/${token}`;
 
   notifyPasswordReset({

@@ -81,7 +81,7 @@ export async function inviteMember(
     after: { email, phone, firstName, lastName, locale },
   });
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:5001";
   const invitationUrl = `${appUrl}/${locale}/pozvanka/${token}`;
 
   notifyInvitation({

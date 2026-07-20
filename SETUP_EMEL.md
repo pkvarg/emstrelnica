@@ -54,7 +54,7 @@ pnpm seed:consent             # seeds cookie/consent defaults
 ## 4. Run the app
 
 ```bash
-pnpm dev                      # http://localhost:3000
+pnpm dev                      # http://localhost:5001
 ```
 
 ## Notes
