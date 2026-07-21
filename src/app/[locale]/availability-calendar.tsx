@@ -15,7 +15,7 @@ interface DayRange {
   closed: boolean;
   closureReasonSk: string | null;
   closureReasonHu: string | null;
-  bookedSlots: { start: string; end: string }[];
+  bookedSlots: { start: string; end: string; units: number }[];
 }
 
 interface Day {
@@ -28,6 +28,8 @@ interface Range {
   id: string;
   nameSk: string;
   nameHu: string;
+  kind: "range" | "space";
+  capacity: number;
 }
 
 interface AvailabilityData {
@@ -42,10 +44,11 @@ function hourToMin(s: string): number {
 
 interface HourSlot {
   hour: string;
+  free: number;
   taken: boolean;
 }
 
-function computeHourSlots(dr: DayRange): HourSlot[] {
+function computeHourSlots(dr: DayRange, capacity: number): HourSlot[] {
   if (!dr.open || !dr.startTime || !dr.endTime) return [];
   const startMin = hourToMin(dr.startTime);
   const endMin = hourToMin(dr.endTime);
@@ -55,12 +58,17 @@ function computeHourSlots(dr: DayRange): HourSlot[] {
   for (let h = startHour; h < endHour; h++) {
     const slotStart = h * 60;
     const slotEnd = slotStart + 60;
-    const taken = dr.bookedSlots.some((b) => {
+    const used = dr.bookedSlots.reduce((sum, b) => {
       const bs = hourToMin(b.start);
       const be = hourToMin(b.end);
-      return bs < slotEnd && be > slotStart;
+      return bs < slotEnd && be > slotStart ? sum + b.units : sum;
+    }, 0);
+    const free = Math.max(0, capacity - used);
+    slots.push({
+      hour: `${String(h).padStart(2, "0")}:00`,
+      free,
+      taken: free <= 0,
     });
-    slots.push({ hour: `${String(h).padStart(2, "0")}:00`, taken });
   }
   return slots;
 }
@@ -171,7 +179,7 @@ export function AvailabilityCalendar() {
           onClick={goPrev}
           disabled={atOrBeforeCurrentMonth}
           aria-label={t("prev")}
-          className="group inline-flex items-center gap-2 rounded-lg border border-amber-600/40 bg-amber-600/10 px-4 py-2 text-sm font-semibold text-amber-500 transition-colors hover:border-amber-500 hover:bg-amber-600/20 hover:text-amber-400 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-amber-600/40 disabled:hover:bg-amber-600/10"
+          className="group inline-flex items-center gap-2 rounded-lg border border-brand/40 bg-brand/10 px-4 py-2 text-sm font-semibold text-brand transition-colors hover:border-brand hover:bg-brand/20 hover:text-brand disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-brand/40 disabled:hover:bg-brand/10"
         >
           <ChevronLeft size={28} strokeWidth={2.5} />
           <span className="hidden sm:inline">{t("prev")}</span>
@@ -183,7 +191,7 @@ export function AvailabilityCalendar() {
           type="button"
           onClick={goNext}
           aria-label={t("next")}
-          className="group inline-flex items-center gap-2 rounded-lg border border-amber-600/40 bg-amber-600/10 px-4 py-2 text-sm font-semibold text-amber-500 transition-colors hover:border-amber-500 hover:bg-amber-600/20 hover:text-amber-400"
+          className="group inline-flex items-center gap-2 rounded-lg border border-brand/40 bg-brand/10 px-4 py-2 text-sm font-semibold text-brand transition-colors hover:border-brand hover:bg-brand/20 hover:text-brand"
         >
           <span className="hidden sm:inline">{t("next")}</span>
           <ChevronRight size={28} strokeWidth={2.5} />
@@ -207,7 +215,7 @@ export function AvailabilityCalendar() {
 
       {loading || !data ? (
         <div className="flex items-center justify-center py-12">
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-700 border-t-amber-500" />
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-700 border-t-brand" />
         </div>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-zinc-800 bg-zinc-900/40">
@@ -243,10 +251,10 @@ export function AvailabilityCalendar() {
                   return (
                     <tr
                       key={day.date}
-                      className={`border-b border-zinc-800/50 transition-colors hover:bg-zinc-800/30 ${today ? "bg-amber-950/10" : ""}`}
+                      className={`border-b border-zinc-800/50 transition-colors hover:bg-zinc-800/30 ${today ? "bg-brand/5" : ""}`}
                     >
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className={`text-sm font-medium ${today ? "text-amber-500" : "text-zinc-300"}`}>
+                        <span className={`text-sm font-medium ${today ? "text-brand" : "text-zinc-300"}`}>
                           {formatDay(day.date, locale)}
                         </span>
                       </td>
@@ -254,6 +262,10 @@ export function AvailabilityCalendar() {
                         <td key={dr.rangeId} className="px-4 py-3">
                           <DayCell
                             dr={dr}
+                            capacity={
+                              data.ranges.find((r) => r.id === dr.rangeId)
+                                ?.capacity ?? 1
+                            }
                             date={day.date}
                             locale={locale}
                             past={false}
@@ -276,6 +288,7 @@ export function AvailabilityCalendar() {
 
 interface DayCellProps {
   dr: DayRange;
+  capacity: number;
   date: string;
   locale: string;
   past: boolean;
@@ -283,7 +296,7 @@ interface DayCellProps {
   isAuthenticated: boolean;
 }
 
-function DayCell({ dr, date, locale, past, t, isAuthenticated }: DayCellProps) {
+function DayCell({ dr, capacity, date, locale, past, t, isAuthenticated }: DayCellProps) {
   if (!dr.open) {
     const reason =
       dr.closed && (locale === "hu" ? dr.closureReasonHu : dr.closureReasonSk);
@@ -294,7 +307,7 @@ function DayCell({ dr, date, locale, past, t, isAuthenticated }: DayCellProps) {
     );
   }
 
-  const slots = computeHourSlots(dr);
+  const slots = computeHourSlots(dr, capacity);
 
   if (dr.bookedSlots.length === 0) {
     if (past) {
@@ -340,6 +353,7 @@ function DayCell({ dr, date, locale, past, t, isAuthenticated }: DayCellProps) {
             key={s.hour}
             href={past ? "#" : buildBookingHref(locale, isAuthenticated, dr.rangeId, date, s.hour)}
             aria-disabled={past}
+            title={capacity > 1 ? `${s.free}/${capacity}` : undefined}
             className={
               past
                 ? "rounded px-2 py-0.5 text-xs font-mono text-zinc-600 ring-1 ring-zinc-800"
@@ -347,6 +361,9 @@ function DayCell({ dr, date, locale, past, t, isAuthenticated }: DayCellProps) {
             }
           >
             {s.hour}
+            {capacity > 1 && s.free < capacity && (
+              <span className="ml-1 text-[10px] opacity-70">{s.free}/{capacity}</span>
+            )}
           </Link>
         );
       })}

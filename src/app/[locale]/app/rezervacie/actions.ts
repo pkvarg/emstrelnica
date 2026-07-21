@@ -5,6 +5,10 @@ import { db } from "@/db";
 import { bookings, users } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { isWithinOpeningHours, isClosedDuring } from "@/lib/availability";
+import {
+  insertBookingGuarded,
+  BookingConflictError,
+} from "@/lib/booking-guard";
 import { writeAudit } from "@/lib/audit";
 import { revalidatePath } from "next/cache";
 import { getPgBoss } from "@/lib/pgboss";
@@ -46,6 +50,8 @@ export async function requestBooking(
   const hours = parseInt(formData.get("hours") as string, 10) || 1;
   const guestCount = parseInt(formData.get("guestCount") as string, 10) || 0;
   const userNote = (formData.get("userNote") as string) || null;
+  const groupSize = parseInt(formData.get("groupSize") as string, 10) || 1;
+  const wholeRange = formData.get("wholeRange") === "on";
 
   if (!rangeId || !date || !startTime) {
     return { error: "All fields are required" };
@@ -75,25 +81,18 @@ export async function requestBooking(
   try {
     const autopilot = await isAutopilotEnabled();
 
-    const [booking] = await db
-      .insert(bookings)
-      .values({
-        userId: session.user.id,
-        rangeId,
-        startsAt,
-        endsAt,
-        guestCount,
-        userNote,
-        rulesConsentVersionAtBooking: "v1",
-        ...(autopilot
-          ? {
-              status: "approved" as const,
-              decidedAt: new Date(),
-              decisionReason: "autopilot",
-            }
-          : {}),
-      })
-      .returning({ id: bookings.id });
+    const booking = await insertBookingGuarded({
+      userId: session.user.id,
+      rangeId,
+      startsAt,
+      endsAt,
+      guestCount,
+      userNote,
+      groupSize,
+      wholeRange,
+      autopilot,
+      rulesConsentVersion: "v1",
+    });
 
     await writeAudit({
       actorUserId: session.user.id,
@@ -104,6 +103,10 @@ export async function requestBooking(
         rangeId,
         startsAt: startsAt.toISOString(),
         endsAt: endsAt.toISOString(),
+        units: booking.units,
+        wholeRange,
+        groupSize,
+        priceCents: booking.priceCents,
         autopilot,
       },
     });
@@ -210,8 +213,12 @@ export async function requestBooking(
     revalidatePath("/app/rezervacie");
     return { success: true };
   } catch (e: unknown) {
+    if (e instanceof BookingConflictError) {
+      return { error: e.code };
+    }
     const msg = (e as Error).message ?? "";
     if (msg.includes("bookings_no_overlap")) {
+      // Legacy constraint (pre-0017 DBs)
       return { error: "slotTaken" };
     }
     throw e;

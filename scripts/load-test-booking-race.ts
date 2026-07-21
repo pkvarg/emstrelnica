@@ -1,26 +1,36 @@
 /**
- * Race test for the bookings exclusion constraint.
+ * Race test for the capacity-aware booking guard.
  *
- * Fires N concurrent inserts for the same range/time slot and verifies
- * exactly one succeeds — proving `bookings_no_overlap` holds under concurrency.
+ * Fires N concurrent insertBookingGuarded() calls for the same range/time
+ * slot and verifies exactly `capacity` succeed and every other attempt is
+ * rejected with a BookingConflictError("slotTaken") — proving the advisory
+ * lock + counted-capacity transaction prevents overbooking under concurrency.
+ *
+ * Also fires one whole-range attempt afterwards and expects it to be
+ * rejected (units already taken).
  *
  * Requires a real user row. Pass its UUID via TEST_USER_ID, or the script
  * will pick the first `active` user.
  *
  *   DATABASE_URL=... tsx scripts/load-test-booking-race.ts
+ *   RACE_CONCURRENCY=20 RACE_RANGE_ID=r50 tsx scripts/load-test-booking-race.ts
  */
 
 import "dotenv/config";
 import { db } from "@/db";
 import { bookings, users, ranges } from "@/db/schema";
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import {
+  insertBookingGuarded,
+  BookingConflictError,
+} from "@/lib/booking-guard";
 
 const N = parseInt(process.env.RACE_CONCURRENCY || "20", 10);
-const RANGE_ID = process.env.RACE_RANGE_ID || "R50";
+const RANGE_ID = process.env.RACE_RANGE_ID || "r50";
 
 async function main() {
   const [range] = await db.select().from(ranges).where(eq(ranges.id, RANGE_ID)).limit(1);
-  if (!range) throw new Error(`Range ${RANGE_ID} not found`);
+  if (!range) throw new Error(`Range ${RANGE_ID} not found (run pnpm seed:emel)`);
 
   let userId = process.env.TEST_USER_ID;
   if (!userId) {
@@ -37,54 +47,88 @@ async function main() {
   const startsAt = new Date(Date.UTC(2099, 0, 1, 9, 0, 0));
   const endsAt = new Date(Date.UTC(2099, 0, 1, 10, 0, 0));
 
-  console.log(`[race] firing ${N} concurrent inserts for ${RANGE_ID} ${startsAt.toISOString()}`);
-  console.log(`[race] user=${userId}`);
+  const expected = Math.min(N, range.capacity);
+  console.log(
+    `[race] firing ${N} concurrent guarded inserts for ${RANGE_ID} ` +
+      `(capacity=${range.capacity}) ${startsAt.toISOString()}`,
+  );
+  console.log(`[race] user=${userId}, expecting exactly ${expected} successes`);
+
+  const cleanup = () =>
+    db
+      .delete(bookings)
+      .where(and(eq(bookings.rangeId, RANGE_ID), eq(bookings.startsAt, startsAt)));
 
   // Clean any leftover from a previous run.
-  await db
-    .delete(bookings)
-    .where(and(eq(bookings.rangeId, RANGE_ID), eq(bookings.startsAt, startsAt)));
+  await cleanup();
 
   const results = await Promise.allSettled(
     Array.from({ length: N }, () =>
-      db.insert(bookings).values({
-        userId,
+      insertBookingGuarded({
+        userId: userId!,
         rangeId: RANGE_ID,
         startsAt,
         endsAt,
-        rulesConsentVersionAtBooking: "v1",
       }),
     ),
   );
 
   const succeeded = results.filter((r) => r.status === "fulfilled").length;
-  const overlapRejected = results.filter(
-    (r) => r.status === "rejected" && /bookings_no_overlap/.test(String((r as PromiseRejectedResult).reason)),
+  const capacityRejected = results.filter(
+    (r) =>
+      r.status === "rejected" &&
+      r.reason instanceof BookingConflictError &&
+      r.reason.code === "slotTaken",
   ).length;
-  const otherRejected = results.length - succeeded - overlapRejected;
+  const otherRejected = results.length - succeeded - capacityRejected;
 
-  console.log(`[race] succeeded=${succeeded} overlap-rejected=${overlapRejected} other-errors=${otherRejected}`);
+  console.log(
+    `[race] succeeded=${succeeded} capacity-rejected=${capacityRejected} other-errors=${otherRejected}`,
+  );
 
-  // Cleanup the one that did succeed.
-  await db
-    .delete(bookings)
-    .where(and(eq(bookings.rangeId, RANGE_ID), eq(bookings.startsAt, startsAt)));
+  let wholeRangeOk = true;
+  if (range.allowWholeRange && succeeded > 0) {
+    // A whole-range rental must now be impossible for the same window.
+    try {
+      await insertBookingGuarded({
+        userId: userId!,
+        rangeId: RANGE_ID,
+        startsAt,
+        endsAt,
+        wholeRange: true,
+      });
+      wholeRangeOk = false;
+      console.error("[race] FAIL: whole-range booking succeeded on a partially-booked slot");
+    } catch (e) {
+      if (e instanceof BookingConflictError && e.code === "slotTaken") {
+        console.log("[race] whole-range attempt correctly rejected");
+      } else {
+        wholeRangeOk = false;
+        console.error("[race] unexpected whole-range error:", e);
+      }
+    }
+  }
+
+  await cleanup();
 
   if (otherRejected > 0) {
     console.error("[race] unexpected errors:");
     for (const r of results) {
-      if (r.status === "rejected" && !/bookings_no_overlap/.test(String(r.reason))) {
+      if (
+        r.status === "rejected" &&
+        !(r.reason instanceof BookingConflictError && r.reason.code === "slotTaken")
+      ) {
         console.error("  -", r.reason);
       }
     }
     process.exit(2);
   }
-  if (succeeded !== 1) {
-    console.error(`[race] FAIL: expected exactly 1 success, got ${succeeded}`);
+  if (succeeded !== expected || !wholeRangeOk) {
+    console.error(`[race] FAIL: expected exactly ${expected} successes, got ${succeeded}`);
     process.exit(1);
   }
 
-  console.log("[race] OK — exclusion constraint holds under concurrency");
+  console.log("[race] OK — capacity guard holds under concurrency");
   process.exit(0);
 }
 

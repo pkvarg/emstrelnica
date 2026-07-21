@@ -1,4 +1,4 @@
-import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { users } from "./users";
 import { ranges } from "./ranges";
 
@@ -33,6 +33,14 @@ export const bookings = pgTable("bookings", {
   autoCompletedAt: timestamp("auto_completed_at", { withTimezone: true }),
   effectiveMinutes: integer("effective_minutes"),
   guestCount: integer("guest_count").notNull().default(0),
+  /** Units (kabínky/lanes) consumed. Whole-range rental = range capacity. */
+  units: integer("units").notNull().default(1),
+  /** True when the booking rents the entire range (all units). */
+  wholeRange: boolean("whole_range").notNull().default(false),
+  /** Shooters in the party (drives parkúr / 2-shooter kabínka pricing). */
+  groupSize: integer("group_size").notNull().default(1),
+  /** Price snapshot in EUR cents computed at booking time; null = on request. */
+  priceCents: integer("price_cents"),
   userNote: text("user_note"),
   adminNote: text("admin_note"),
   cancellationReason: text("cancellation_reason"),

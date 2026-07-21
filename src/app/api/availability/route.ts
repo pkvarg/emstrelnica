@@ -37,10 +37,24 @@ export async function GET(req: NextRequest) {
   const twoWeeksLater = rangeEnd;
 
   const allRanges = await db
-    .select({ id: ranges.id, nameSk: ranges.nameSk, nameHu: ranges.nameHu })
+    .select({
+      id: ranges.id,
+      nameSk: ranges.nameSk,
+      nameHu: ranges.nameHu,
+      kind: ranges.kind,
+      capacity: ranges.capacity,
+      maxGroupSize: ranges.maxGroupSize,
+      blocksAll: ranges.blocksAll,
+      allowWholeRange: ranges.allowWholeRange,
+      pricing: ranges.pricing,
+    })
     .from(ranges)
     .where(eq(ranges.active, true))
     .orderBy(asc(ranges.sortOrder));
+
+  const blocksAllIds = new Set(
+    allRanges.filter((r) => r.blocksAll).map((r) => r.id),
+  );
 
   const todayStr = bratislavaDateStr(rangeStart);
   const endStr = bratislavaDateStr(twoWeeksLater);
@@ -71,6 +85,7 @@ export async function GET(req: NextRequest) {
       startsAt: bookings.startsAt,
       endsAt: bookings.endsAt,
       status: bookings.status,
+      units: bookings.units,
     })
     .from(bookings)
     .where(
@@ -92,7 +107,7 @@ export async function GET(req: NextRequest) {
       closed: boolean;
       closureReasonSk: string | null;
       closureReasonHu: string | null;
-      bookedSlots: { start: string; end: string }[];
+      bookedSlots: { start: string; end: string; units: number }[];
     }[];
   }[] = [];
 
@@ -119,14 +134,20 @@ export async function GET(req: NextRequest) {
       );
 
       const dayBookings = activeBookings
-        .filter(
-          (b) =>
-            b.rangeId === range.id &&
-            bratislavaDateStr(b.startsAt) === dateStr,
-        )
+        .filter((b) => {
+          if (bratislavaDateStr(b.startsAt) !== dateStr) return false;
+          if (b.rangeId === range.id) return true;
+          // Whole-facility rental blocks every resource…
+          if (blocksAllIds.has(b.rangeId)) return true;
+          // …and any booking anywhere blocks the whole-facility resource.
+          if (range.blocksAll) return true;
+          return false;
+        })
         .map((b) => ({
           start: bratislavaTimeStr(b.startsAt),
           end: bratislavaTimeStr(b.endsAt),
+          // Cross-resource blocks consume the full capacity of this range.
+          units: b.rangeId === range.id ? b.units : range.capacity,
         }));
 
       return {

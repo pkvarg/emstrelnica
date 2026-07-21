@@ -13,6 +13,8 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "seed:admin": "tsx src/db/seed-admin.ts",
+    "seed:consent": "tsx src/db/seed-consent.ts",
+    "seed:emel": "tsx src/db/seed-emel.ts",
     "test:booking-race": "tsx scripts/load-test-booking-race.ts"
   },
   "dependencies": {

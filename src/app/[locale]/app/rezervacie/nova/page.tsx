@@ -1,16 +1,30 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { requestBooking } from "../actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  computeBookingPrice,
+  formatEur,
+  type RangePricing,
+} from "@/lib/pricing";
 
 interface Range {
   id: string;
   nameSk: string;
+  nameHu: string;
+  kind: "range" | "space";
+  capacity: number;
+  maxGroupSize: number;
+  blocksAll: boolean;
+  allowWholeRange: boolean;
+  descriptionSk: string | null;
+  descriptionHu: string | null;
+  pricing: RangePricing | null;
 }
 
 interface AvailabilityDayRange {
@@ -21,7 +35,7 @@ interface AvailabilityDayRange {
   closed: boolean;
   closureReasonSk: string | null;
   closureReasonHu: string | null;
-  bookedSlots: { start: string; end: string }[];
+  bookedSlots: { start: string; end: string; units: number }[];
 }
 
 interface AvailabilityDay {
@@ -34,11 +48,9 @@ interface AvailabilityResponse {
   days: AvailabilityDay[];
 }
 
-type SlotState = "free" | "booked" | "closed";
-
 interface Slot {
   hour: string;
-  state: SlotState;
+  free: number;
 }
 
 function hourToMin(s: string): number {
@@ -46,7 +58,10 @@ function hourToMin(s: string): number {
   return h * 60 + m;
 }
 
-function computeSlots(day: AvailabilityDayRange | undefined): Slot[] {
+function computeSlots(
+  day: AvailabilityDayRange | undefined,
+  capacity: number,
+): Slot[] {
   if (!day || !day.open || !day.startTime || !day.endTime) return [];
   const startMin = hourToMin(day.startTime);
   const endMin = hourToMin(day.endTime);
@@ -56,14 +71,14 @@ function computeSlots(day: AvailabilityDayRange | undefined): Slot[] {
   for (let h = startHour; h < endHour; h++) {
     const slotStart = h * 60;
     const slotEnd = slotStart + 60;
-    const taken = day.bookedSlots.some((b) => {
+    const used = day.bookedSlots.reduce((sum, b) => {
       const bs = hourToMin(b.start);
       const be = hourToMin(b.end);
-      return bs < slotEnd && be > slotStart;
-    });
+      return bs < slotEnd && be > slotStart ? sum + b.units : sum;
+    }, 0);
     slots.push({
       hour: `${String(h).padStart(2, "0")}:00`,
-      state: taken ? "booked" : "free",
+      free: Math.max(0, capacity - used),
     });
   }
   return slots;
@@ -71,6 +86,7 @@ function computeSlots(day: AvailabilityDayRange | undefined): Slot[] {
 
 export default function NewBookingPage() {
   const t = useTranslations("booking");
+  const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const presetRangeId = searchParams.get("rangeId") ?? "";
@@ -85,6 +101,9 @@ export default function NewBookingPage() {
   const [startTime, setStartTime] = useState(
     presetStartTime && /^\d{2}:00$/.test(presetStartTime) ? presetStartTime : "09:00",
   );
+  const [hours, setHours] = useState(1);
+  const [groupSize, setGroupSize] = useState(1);
+  const [wholeRange, setWholeRange] = useState(false);
 
   useEffect(() => {
     fetch("/api/ranges")
@@ -105,13 +124,47 @@ export default function NewBookingPage() {
     }
   }, [state, router]);
 
+  const selected = useMemo(
+    () => ranges.find((r) => r.id === rangeId),
+    [ranges, rangeId],
+  );
+
+  // Reset per-range options when switching resources
+  useEffect(() => {
+    setWholeRange(false);
+    setGroupSize((g) => Math.min(g, selected?.maxGroupSize ?? 1));
+  }, [rangeId, selected?.maxGroupSize]);
+
+  const localizedName = (r: Range) => (locale === "hu" ? r.nameHu : r.nameSk);
+  const shootingRanges = ranges.filter((r) => r.kind === "range");
+  const spaces = ranges.filter((r) => r.kind === "space");
+
   const dayRange = useMemo(() => {
     if (!availability || !date || !rangeId) return undefined;
     const day = availability.days.find((d) => d.date === date);
     return day?.ranges.find((r) => r.rangeId === rangeId);
   }, [availability, date, rangeId]);
 
-  const slots = useMemo(() => computeSlots(dayRange), [dayRange]);
+  const capacity = selected?.capacity ?? 1;
+  const unitsNeeded = wholeRange ? capacity : 1;
+  const slots = useMemo(
+    () => computeSlots(dayRange, capacity),
+    [dayRange, capacity],
+  );
+
+  const priceCents = useMemo(
+    () =>
+      selected
+        ? computeBookingPrice(selected.pricing, { hours, groupSize, wholeRange })
+        : null,
+    [selected, hours, groupSize, wholeRange],
+  );
+  const priceNote =
+    selected?.pricing?.type === "info"
+      ? locale === "hu"
+        ? selected.pricing.noteHu
+        : selected.pricing.noteSk
+      : null;
 
   return (
     <div className="grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,1fr)_320px]">
@@ -128,10 +181,26 @@ export default function NewBookingPage() {
               onChange={(e) => setRangeId(e.target.value)}
               required
             >
-              {ranges.map((r) => (
-                <option key={r.id} value={r.id}>{r.nameSk}</option>
-              ))}
+              {shootingRanges.length > 0 && (
+                <optgroup label={t("rangesGroup")}>
+                  {shootingRanges.map((r) => (
+                    <option key={r.id} value={r.id}>{localizedName(r)}</option>
+                  ))}
+                </optgroup>
+              )}
+              {spaces.length > 0 && (
+                <optgroup label={t("spacesGroup")}>
+                  {spaces.map((r) => (
+                    <option key={r.id} value={r.id}>{localizedName(r)}</option>
+                  ))}
+                </optgroup>
+              )}
             </select>
+            {selected && (locale === "hu" ? selected.descriptionHu : selected.descriptionSk) && (
+              <p className="text-xs text-muted-foreground">
+                {locale === "hu" ? selected.descriptionHu : selected.descriptionSk}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -165,8 +234,64 @@ export default function NewBookingPage() {
 
           <div className="space-y-2">
             <Label>{t("hours")}</Label>
-            <Input name="hours" type="number" min="1" max="8" defaultValue="1" required />
+            <Input
+              name="hours"
+              type="number"
+              min="1"
+              max="8"
+              value={hours}
+              onChange={(e) =>
+                setHours(Math.max(1, Math.min(8, parseInt(e.target.value, 10) || 1)))
+              }
+              required
+            />
           </div>
+
+          {selected && selected.maxGroupSize > 1 && (
+            <div className="space-y-2">
+              <Label>{t("groupSize")}</Label>
+              <Input
+                name="groupSize"
+                type="number"
+                min="1"
+                max={selected.maxGroupSize}
+                value={groupSize}
+                onChange={(e) =>
+                  setGroupSize(
+                    Math.max(
+                      1,
+                      Math.min(
+                        selected.maxGroupSize,
+                        parseInt(e.target.value, 10) || 1,
+                      ),
+                    ),
+                  )
+                }
+              />
+              <p className="text-xs text-muted-foreground">
+                {t("groupSizeMax", { max: selected.maxGroupSize })}
+              </p>
+            </div>
+          )}
+
+          {selected?.allowWholeRange && (
+            <div className="flex items-start gap-2.5 rounded-md border p-3">
+              <input
+                id="wholeRange"
+                name="wholeRange"
+                type="checkbox"
+                checked={wholeRange}
+                onChange={(e) => setWholeRange(e.target.checked)}
+                className="mt-0.5"
+              />
+              <div>
+                <Label htmlFor="wholeRange">{t("wholeRange")}</Label>
+                <p className="text-xs text-muted-foreground">
+                  {t("wholeRangeHint", { capacity: selected.capacity })}
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label>{t("guestCount")}</Label>
@@ -176,6 +301,16 @@ export default function NewBookingPage() {
           <div className="space-y-2">
             <Label>{t("note")}</Label>
             <Input name="userNote" />
+          </div>
+
+          <div className="rounded-md border bg-card p-3 text-sm">
+            <div className="flex items-center justify-between">
+              <span className="font-medium">{t("price")}</span>
+              <span className="font-semibold">
+                {priceCents != null ? formatEur(priceCents) : priceNote ?? t("priceOnRequest")}
+              </span>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">{t("payOnSite")}</p>
           </div>
 
           {state?.error && (
@@ -192,6 +327,11 @@ export default function NewBookingPage() {
 
       <aside className="rounded-lg border bg-card p-4">
         <h2 className="text-sm font-semibold">{t("availableSlots")}</h2>
+        {capacity > 1 && (
+          <p className="mt-1 text-xs text-muted-foreground">
+            {t("capacityInfo", { capacity })}
+          </p>
+        )}
         {!date || !rangeId ? (
           <p className="mt-3 text-sm text-muted-foreground">{t("selectDateFirst")}</p>
         ) : dayRange?.closed ? (
@@ -201,9 +341,10 @@ export default function NewBookingPage() {
         ) : (
           <ul className="mt-3 grid grid-cols-3 gap-2">
             {slots.map((s) => {
-              const selected = s.hour === startTime;
+              const selectedSlot = s.hour === startTime;
+              const bookable = s.free >= unitsNeeded;
               const base = "rounded-md border px-2 py-1.5 text-sm transition";
-              if (s.state === "booked") {
+              if (!bookable) {
                 return (
                   <li key={s.hour}>
                     <button
@@ -222,12 +363,21 @@ export default function NewBookingPage() {
                     type="button"
                     onClick={() => setStartTime(s.hour)}
                     className={`${base} w-full ${
-                      selected
+                      selectedSlot
                         ? "border-primary bg-primary text-primary-foreground"
                         : "hover:border-primary hover:bg-primary/5"
                     }`}
                   >
-                    {s.hour}
+                    <span className="block">{s.hour}</span>
+                    {capacity > 1 && (
+                      <span
+                        className={`block text-[10px] ${
+                          selectedSlot ? "text-primary-foreground/80" : "text-muted-foreground"
+                        }`}
+                      >
+                        {t("freeUnits", { free: s.free, capacity })}
+                      </span>
+                    )}
                   </button>
                 </li>
               );

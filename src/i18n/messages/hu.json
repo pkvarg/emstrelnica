@@ -45,7 +45,12 @@
     "rangeBRdesc": "Szabadtéri sörétes lőtér trap és skeet lövészethez. Automata korongvető, tágas állások.",
     "rangesHeading": "Lőtereink",
     "footerRights": "Minden jog fenntartva",
-    "footerAddress": "A lőtér elérhetősége"
+    "footerAddress": "A lőtér elérhetősége",
+    "boxes": "{count} lőállás",
+    "wholeRangeChip": "teljes lőtér bérelhető",
+    "spaceBadge": "bérelhető tér",
+    "noRanges": "A lőterek előkészítés alatt — hamarosan itt találja a teljes kínálatot.",
+    "bookResource": "Foglalás"
   },
   "auth": {
     "loginTitle": "Bejelentkezés",
@@ -200,7 +205,10 @@
     "decline": "Elutasítás",
     "declineReason": "Elutasítás oka",
     "cancelReasonLabel": "Lemondás oka",
-    "cancelledBy": { "member": "tag mondta le", "admin": "admin mondta le" },
+    "cancelledBy": {
+      "member": "tag mondta le",
+      "admin": "admin mondta le"
+    },
     "requestTime": "Kérelem",
     "guestsWithCount": "({count} vendég)",
     "checkIn": "Check-in",
@@ -316,7 +324,9 @@
       "weaponNameRequired": "A fegyver neve kötelező",
       "weaponCalibreRequired": "A kaliber kötelező",
       "weaponSerialRequired": "A gyártási szám kötelező",
-      "weaponTooLong": "Néhány mező meghaladja a megengedett hosszt"
+      "weaponTooLong": "Néhány mező meghaladja a megengedett hosszt",
+      "userWithPhoneExists": "Ezzel a telefonszámmal már létezik felhasználó",
+      "unexpected": "Váratlan hiba történt. Próbálja újra."
     }
   },
   "openingHours": {
@@ -331,7 +341,15 @@
     "delete": "Törlés",
     "saved": "Nyitvatartás mentve",
     "editTitle": "Nyitvatartás szerkesztése",
-    "days": ["Vasárnap", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat"],
+    "days": [
+      "Vasárnap",
+      "Hétfő",
+      "Kedd",
+      "Szerda",
+      "Csütörtök",
+      "Péntek",
+      "Szombat"
+    ],
     "daysSuffix": "({count} nap)"
   },
   "closures": {
@@ -385,7 +403,22 @@
       "checked_in": "Bejelentkezve",
       "completed": "Befejezett",
       "no_show": "Nem jelent meg"
-    }
+    },
+    "rangesGroup": "Lőterek",
+    "spacesGroup": "Bérelhető terek",
+    "groupSize": "Lövészek száma",
+    "groupSizeMax": "Legfeljebb {max} fő",
+    "wholeRange": "Teljes lőtér bérlése",
+    "wholeRangeHint": "Az összes lőállást ({capacity}) egyszerre lefoglalja",
+    "price": "Ár",
+    "payOnSite": "Fizetés a helyszínen",
+    "priceOnRequest": "Ár megegyezés szerint",
+    "capacityInfo": "Egyszerre {capacity} lőállás érhető el",
+    "freeUnits": "szabad {free}/{capacity}",
+    "groupTooLarge": "A megengedett létszám túllépve",
+    "wholeRangeNotAllowed": "Ez a lőtér nem bérelhető ki teljes egészében",
+    "arealBooked": "Ebben az időben a teljes létesítmény ki van bérelve",
+    "rangeNotFound": "A lőtér nem érhető el"
   },
   "checkIn": {
     "title": "Érkezés megerősítése",

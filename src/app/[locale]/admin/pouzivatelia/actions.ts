@@ -14,6 +14,21 @@ import { getTranslations } from "next-intl/server";
 
 const INVITATION_TTL_MS = 72 * 60 * 60 * 1000;
 
+/**
+ * Maps a Postgres unique-constraint violation on users to a localized
+ * error message, or returns null for unrelated errors. Pre-insert checks
+ * can race; this is the authoritative safety net.
+ */
+function uniqueViolationError(
+  e: unknown,
+  t: Awaited<ReturnType<typeof getTranslations<"admin.errors">>>,
+): string | null {
+  const msg = e instanceof Error ? e.message : String(e);
+  if (msg.includes("users_phone_e164_unique")) return t("phoneInUse");
+  if (msg.includes("users_email_unique")) return t("emailInUse");
+  return null;
+}
+
 interface InviteResult {
   error?: string;
   success?: boolean;
@@ -53,25 +68,45 @@ export async function inviteMember(
     return { error: t("userWithEmailExists") };
   }
 
+  const [phoneCollision] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.phoneE164, phone))
+    .limit(1);
+
+  if (phoneCollision) {
+    return { error: t("userWithPhoneExists") };
+  }
+
   const token = generateToken();
   const tokenHash = hashToken(token);
   const expiresAt = new Date(Date.now() + INVITATION_TTL_MS);
 
-  const [newUser] = await db
-    .insert(users)
-    .values({
-      email,
-      phoneE164: phone,
-      firstName,
-      lastName,
-      locale: locale as "sk" | "hu",
-      status: "invited",
-      role: "member",
-      invitedBy: session.user.id,
-      invitationTokenHash: tokenHash,
-      invitationExpiresAt: expiresAt,
-    })
-    .returning({ id: users.id });
+  let newUser: { id: string };
+  try {
+    [newUser] = await db
+      .insert(users)
+      .values({
+        email,
+        phoneE164: phone,
+        firstName,
+        lastName,
+        locale: locale as "sk" | "hu",
+        status: "invited",
+        role: "member",
+        invitedBy: session.user.id,
+        invitationTokenHash: tokenHash,
+        invitationExpiresAt: expiresAt,
+      })
+      .returning({ id: users.id });
+  } catch (e) {
+    // Pre-checks can race with a concurrent insert — map the DB constraint
+    // violation to the same friendly errors instead of a 500.
+    const mapped = uniqueViolationError(e, t);
+    if (mapped) return { error: mapped };
+    console.error("[inviteMember] insert failed:", e);
+    return { error: t("unexpected") };
+  }
 
   await writeAudit({
     actorUserId: session.user.id,
@@ -168,24 +203,31 @@ export async function updateUserAdmin(
     return { error: t("cannotRemoveSelfAdmin") };
   }
 
-  await db
-    .update(users)
-    .set({
-      firstName,
-      lastName,
-      email,
-      phoneE164: phone,
-      birthDate,
-      addressStreet,
-      addressCity,
-      addressZip,
-      addressCountry,
-      locale,
-      role,
-      notesAdmin,
-      updatedAt: new Date(),
-    })
-    .where(eq(users.id, userId));
+  try {
+    await db
+      .update(users)
+      .set({
+        firstName,
+        lastName,
+        email,
+        phoneE164: phone,
+        birthDate,
+        addressStreet,
+        addressCity,
+        addressZip,
+        addressCountry,
+        locale,
+        role,
+        notesAdmin,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  } catch (e) {
+    const mapped = uniqueViolationError(e, t);
+    if (mapped) return { error: mapped };
+    console.error("[updateUserAdmin] update failed:", e);
+    return { error: t("unexpected") };
+  }
 
   await writeAudit({
     actorUserId: session.user.id,

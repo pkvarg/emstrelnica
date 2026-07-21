@@ -1,64 +1,197 @@
-import { useTranslations, useLocale } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import {
+  Target,
+  Crosshair,
+  CircleDot,
+  Disc,
+  Presentation,
+  Tent,
+  Landmark,
+  type LucideIcon,
+} from "lucide-react";
+import { db } from "@/db";
+import { ranges as rangesTable } from "@/db/schema";
+import { eq, asc } from "drizzle-orm";
+import { auth } from "@/lib/auth";
+import { formatEur, type RangePricing } from "@/lib/pricing";
 import { AvailabilityCalendar } from "./availability-calendar";
 import { OpeningHoursPanel } from "./opening-hours-panel";
 import { OpenNowBadge } from "./open-now-badge";
 
+export const dynamic = "force-dynamic";
+
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1595590424283-b8f17842773f?q=80&w=2070&auto=format&fit=crop";
 
-function RangeCard({
-  title,
-  description,
-  icon,
+const RESOURCE_ICONS: Record<string, LucideIcon> = {
+  r50: Target,
+  r25: Crosshair,
+  parkur: CircleDot,
+  trap: Disc,
+  miestnost: Presentation,
+  altanok: Tent,
+  areal: Landmark,
+};
+
+interface Resource {
+  id: string;
+  nameSk: string;
+  nameHu: string;
+  kind: "range" | "space";
+  capacity: number;
+  allowWholeRange: boolean;
+  descriptionSk: string | null;
+  descriptionHu: string | null;
+  pricing: RangePricing | null;
+}
+
+function priceLabel(pricing: RangePricing | null, locale: string): string | null {
+  if (!pricing) return null;
+  const perHour = locale === "hu" ? "€/óra" : "€/hod";
+  const from = (cents: number) =>
+    locale === "hu"
+      ? `${formatEur(cents)}/óra ártól`
+      : `od ${formatEur(cents)}/hod`;
+  switch (pricing.type) {
+    case "hourlyUnit":
+      return from(pricing.unitHourCents);
+    case "perPersonHourly": {
+      const min = Math.min(...pricing.tiers.map((t) => t.hourCents));
+      return from(min);
+    }
+    case "hourlyFlat":
+      return `${formatEur(pricing.hourCents).replace(" €", "")} ${perHour}`;
+    case "firstNext":
+      return locale === "hu"
+        ? `első óra ${formatEur(pricing.firstHourCents)}`
+        : `prvá hodina ${formatEur(pricing.firstHourCents)}`;
+    case "info":
+      return locale === "hu" ? pricing.noteHu : pricing.noteSk;
+  }
+}
+
+async function loadResources(): Promise<Resource[]> {
+  try {
+    return await db
+      .select({
+        id: rangesTable.id,
+        nameSk: rangesTable.nameSk,
+        nameHu: rangesTable.nameHu,
+        kind: rangesTable.kind,
+        capacity: rangesTable.capacity,
+        allowWholeRange: rangesTable.allowWholeRange,
+        descriptionSk: rangesTable.descriptionSk,
+        descriptionHu: rangesTable.descriptionHu,
+        pricing: rangesTable.pricing,
+      })
+      .from(rangesTable)
+      .where(eq(rangesTable.active, true))
+      .orderBy(asc(rangesTable.sortOrder));
+  } catch {
+    // DB not reachable (e.g. build time) — section falls back to empty.
+    return [];
+  }
+}
+
+/** Same convention as the availability calendar: straight to the booking
+ *  form when authenticated, otherwise via login with a callback URL. */
+function bookingHref(
+  locale: string,
+  isAuthenticated: boolean,
+  rangeId: string,
+): string {
+  const target = `/${locale}/app/rezervacie/nova?rangeId=${encodeURIComponent(rangeId)}`;
+  if (isAuthenticated) return target;
+  return `/${locale}/prihlasenie?callbackUrl=${encodeURIComponent(target)}`;
+}
+
+function ResourceCard({
+  resource,
+  index,
+  locale,
+  chips,
+  href,
+  bookLabel,
 }: {
-  title: string;
-  description: string;
-  icon: "50m" | "shotgun";
+  resource: Resource;
+  index: number;
+  locale: string;
+  chips: string[];
+  href: string;
+  bookLabel: string;
 }) {
+  const Icon = RESOURCE_ICONS[resource.id] ?? Target;
+  const name = locale === "hu" ? resource.nameHu : resource.nameSk;
+  const description =
+    locale === "hu" ? resource.descriptionHu : resource.descriptionSk;
+
   return (
-    <div className="group relative overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/50 p-8 transition-all duration-300 hover:border-brand/40 hover:bg-zinc-900/80">
-      <div className="absolute -right-4 -top-4 font-[family-name:var(--font-bebas)] text-[120px] italic leading-none text-zinc-800/30 transition-colors group-hover:text-brand/10">
-        {icon === "50m" ? "50" : "BR"}
+    <Link
+      href={href}
+      className="group relative flex flex-col overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/50 p-7 transition-all duration-300 hover:border-brand/40 hover:bg-zinc-900/80"
+    >
+      <div className="absolute -right-3 -top-5 font-[family-name:var(--font-bebas)] text-[100px] italic leading-none text-zinc-800/40 transition-colors group-hover:text-brand/10">
+        {String(index + 1).padStart(2, "0")}
       </div>
-      <div className="relative">
-        <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-sm bg-brand/10 text-brand">
-          {icon === "50m" ? (
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <rect x="2" y="2" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
-              <circle cx="10" cy="10" r="3" stroke="currentColor" strokeWidth="1.5" />
-              <line x1="10" y1="2" x2="10" y2="7" stroke="currentColor" strokeWidth="1" />
-              <line x1="10" y1="13" x2="10" y2="18" stroke="currentColor" strokeWidth="1" />
-              <line x1="2" y1="10" x2="7" y2="10" stroke="currentColor" strokeWidth="1" />
-              <line x1="13" y1="10" x2="18" y2="10" stroke="currentColor" strokeWidth="1" />
-            </svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <circle cx="10" cy="6" r="4" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M3 18 L10 10 L17 18" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-            </svg>
-          )}
+      <div className="relative flex flex-1 flex-col">
+        <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-sm bg-brand/10 text-brand">
+          <Icon size={22} strokeWidth={1.75} />
         </div>
         <h3 className="mb-2 font-[family-name:var(--font-bebas)] text-2xl tracking-wide text-zinc-100">
-          {title}
+          {name}
         </h3>
-        <p className="text-sm leading-relaxed text-zinc-400">
-          {description}
-        </p>
+        {description && (
+          <p className="text-sm leading-relaxed text-zinc-400">{description}</p>
+        )}
+        {chips.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2 pt-1">
+            {chips.map((chip) => (
+              <span
+                key={chip}
+                className="rounded-sm border border-zinc-700/80 bg-zinc-900 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-zinc-300"
+              >
+                {chip}
+              </span>
+            ))}
+          </div>
+        )}
+        <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.15em] text-brand opacity-80 transition-opacity group-hover:opacity-100">
+          {bookLabel}
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }
 
-export default function HomePage() {
-  const t = useTranslations();
-  const locale = useLocale();
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations();
+  const [resources, session] = await Promise.all([loadResources(), auth()]);
+  const isAuthenticated = !!session?.user;
 
   // Purely presentational: render the last word of the headline in brand yellow
   const headline = t("landing.heroHeadline");
   const words = headline.split(" ");
   const headlineStart = words.slice(0, -1).join(" ");
   const headlineEnd = words[words.length - 1];
+
+  const buildChips = (r: Resource): string[] => {
+    const chips: string[] = [];
+    if (r.capacity > 1) chips.push(t("landing.boxes", { count: r.capacity }));
+    const price = priceLabel(r.pricing, locale);
+    if (price) chips.push(price);
+    if (r.allowWholeRange) chips.push(t("landing.wholeRangeChip"));
+    if (r.kind === "space") chips.push(t("landing.spaceBadge"));
+    return chips;
+  };
 
   return (
     <div className="flex flex-col">
@@ -117,18 +250,25 @@ export default function HomePage() {
             </h2>
             <div className="h-px flex-1 bg-zinc-800" />
           </div>
-          <div className="grid gap-6 md:grid-cols-2">
-            <RangeCard
-              title={t("landing.range50title")}
-              description={t("landing.range50desc")}
-              icon="50m"
-            />
-            <RangeCard
-              title={t("landing.rangeBRtitle")}
-              description={t("landing.rangeBRdesc")}
-              icon="shotgun"
-            />
-          </div>
+          {resources.length === 0 ? (
+            <p className="text-center text-sm text-zinc-500">
+              {t("landing.noRanges")}
+            </p>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {resources.map((r, i) => (
+                <ResourceCard
+                  key={r.id}
+                  resource={r}
+                  index={i}
+                  locale={locale}
+                  chips={buildChips(r)}
+                  href={bookingHref(locale, isAuthenticated, r.id)}
+                  bookLabel={t("landing.bookResource")}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

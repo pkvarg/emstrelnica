@@ -18,6 +18,9 @@ interface Booking {
   endsAt: Date;
   status: string;
   guestCount: number;
+  groupSize: number;
+  wholeRange: boolean;
+  priceCents: number | null;
   userNote: string | null;
   adminNote: string | null;
   cancellationReason: string | null;
@@ -78,7 +81,24 @@ export function AdminBookingsTable({
               <br />
               <span className="text-xs text-zinc-500">{b.userEmail}</span>
             </TableCell>
-            <TableCell>{rangeMap[b.rangeId] ?? b.rangeId}</TableCell>
+            <TableCell>
+              {rangeMap[b.rangeId] ?? b.rangeId}
+              {b.wholeRange && (
+                <span className="ml-1.5 rounded bg-brand/15 px-1.5 py-0.5 text-[10px] font-semibold text-brand">
+                  {t("wholeRange")}
+                </span>
+              )}
+              {b.groupSize > 1 && (
+                <span className="ml-1.5 text-xs text-zinc-500">
+                  {b.groupSize} os.
+                </span>
+              )}
+              {b.priceCents != null && (
+                <div className="text-xs text-zinc-500">
+                  {(b.priceCents / 100).toFixed(2).replace(".", ",")} €
+                </div>
+              )}
+            </TableCell>
             <TableCell>{fmtDate(b.startsAt)}</TableCell>
             <TableCell>
               {fmtTime(b.startsAt)}

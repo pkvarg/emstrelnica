@@ -45,7 +45,12 @@
     "rangeBRdesc": "Vonkajšia broková strelnica pre trap a skeet. Automatický vrhač, priestranné stanovištia.",
     "rangesHeading": "Naše strelnice",
     "footerRights": "Všetky práva vyhradené",
-    "footerAddress": "Kontaktná adresa strelnice"
+    "footerAddress": "Kontaktná adresa strelnice",
+    "boxes": "{count} boxov",
+    "wholeRangeChip": "možnosť prenájmu celej strelnice",
+    "spaceBadge": "priestor na prenájom",
+    "noRanges": "Strelnice sa pripravujú — čoskoro tu nájdete kompletnú ponuku.",
+    "bookResource": "Rezervovať"
   },
   "auth": {
     "loginTitle": "Prihlásenie",
@@ -200,7 +205,10 @@
     "decline": "Zamietnuť",
     "declineReason": "Dôvod zamietnutia",
     "cancelReasonLabel": "Dôvod zrušenia",
-    "cancelledBy": { "member": "zrušil člen", "admin": "zrušil admin" },
+    "cancelledBy": {
+      "member": "zrušil člen",
+      "admin": "zrušil admin"
+    },
     "requestTime": "Žiadosť",
     "guestsWithCount": "({count} hostí)",
     "checkIn": "Check-in",
@@ -316,7 +324,9 @@
       "weaponNameRequired": "Názov zbrane je povinný",
       "weaponCalibreRequired": "Kaliber je povinný",
       "weaponSerialRequired": "Výrobné číslo je povinné",
-      "weaponTooLong": "Niektoré pole prekračuje maximálnu dĺžku"
+      "weaponTooLong": "Niektoré pole prekračuje maximálnu dĺžku",
+      "userWithPhoneExists": "Používateľ s týmto telefónnym číslom už existuje",
+      "unexpected": "Nastala neočakávaná chyba. Skúste to znova."
     }
   },
   "openingHours": {
@@ -331,7 +341,15 @@
     "delete": "Odstrániť",
     "saved": "Otváracie hodiny boli uložené",
     "editTitle": "Upraviť otváracie hodiny",
-    "days": ["Nedeľa", "Pondelok", "Utorok", "Streda", "Štvrtok", "Piatok", "Sobota"],
+    "days": [
+      "Nedeľa",
+      "Pondelok",
+      "Utorok",
+      "Streda",
+      "Štvrtok",
+      "Piatok",
+      "Sobota"
+    ],
     "daysSuffix": "({count} dní)"
   },
   "closures": {
@@ -385,7 +403,22 @@
       "checked_in": "Prihlásený",
       "completed": "Dokončená",
       "no_show": "Neprišiel"
-    }
+    },
+    "rangesGroup": "Strelnice",
+    "spacesGroup": "Priestory na prenájom",
+    "groupSize": "Počet strelcov",
+    "groupSizeMax": "Maximálne {max} osôb",
+    "wholeRange": "Prenájom celej strelnice",
+    "wholeRangeHint": "Rezervuje všetky boxy ({capacity}) naraz",
+    "price": "Cena",
+    "payOnSite": "Platba na mieste",
+    "priceOnRequest": "Cena dohodou",
+    "capacityInfo": "K dispozícii {capacity} boxov súčasne",
+    "freeUnits": "voľné {free}/{capacity}",
+    "groupTooLarge": "Prekročený maximálny počet osôb",
+    "wholeRangeNotAllowed": "Túto strelnicu nie je možné prenajať celú",
+    "arealBooked": "V tomto čase je prenajatý celý areál",
+    "rangeNotFound": "Strelnica nie je dostupná"
   },
   "checkIn": {
     "title": "Potvrdenie príchodu",
