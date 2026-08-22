@@ -22,13 +22,53 @@ export async function requestPasswordReset(
   if (!allowed) return { success: true };
 
   const [user] = await db
-    .select({ id: users.id })
+    .select({ id: users.id, status: users.status, locale: users.locale, firstName: users.firstName })
     .from(users)
     .where(eq(users.email, email))
     .limit(1);
 
   // Always return success to avoid email enumeration
   if (!user) return { success: true };
+
+  // Suspended/anonymized accounts can't log in regardless of password —
+  // don't send a reset link that leads to a dead end.
+  if (user.status === "suspended" || user.status === "anonymized") {
+    return { success: true };
+  }
+
+  // Invited users have no active account yet: a password reset would
+  // "succeed" but login still refuses non-active accounts. Re-issue the
+  // invitation instead so they finish registration properly.
+  if (user.status === "invited") {
+    const inviteToken = generateToken();
+    await db
+      .update(users)
+      .set({
+        invitationTokenHash: hashToken(inviteToken),
+        invitationExpiresAt: new Date(Date.now() + 72 * 60 * 60 * 1000),
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, user.id));
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:5001";
+    const { notifyInvitation } = await import("@/lib/notify");
+    notifyInvitation({
+      email,
+      firstName: user.firstName || "používateľ",
+      invitationUrl: `${appUrl}/${user.locale || "sk"}/pozvanka/${inviteToken}`,
+      locale: user.locale || "sk",
+      userId: user.id,
+    }).catch(console.error);
+
+    await writeAudit({
+      actorUserId: user.id,
+      action: "invitation_resent_via_password_reset",
+      entityType: "user",
+      entityId: user.id,
+    });
+
+    return { success: true };
+  }
 
   const code = crypto.randomInt(100000, 999999).toString();
   const token = generateToken();
@@ -62,7 +102,7 @@ export async function resetPassword(
 ) {
   const ip = (await getClientIp()) ?? "unknown";
   const { allowed } = rateLimit(`reset-confirm:${ip}`, 5, 15 * 60 * 1000);
-  if (!allowed) return { error: "Too many attempts" };
+  if (!allowed) return { error: "tooManyAttempts" };
 
   const password = formData.get("password") as string;
   const confirmPassword = formData.get("confirmPassword") as string;
@@ -80,6 +120,25 @@ export async function resetPassword(
 
   if (!vc || vc.usedAt || vc.expiresAt < new Date()) {
     return { error: "invalidToken" };
+  }
+
+  // Guard: only accounts that are allowed to log in may reset a password.
+  // Login (validateAdminCredentials) refuses anything except
+  // active/pending_verification, so resetting would be a silent dead end.
+  const [account] = await db
+    .select({ status: users.status })
+    .from(users)
+    .where(eq(users.id, vc.userId))
+    .limit(1);
+
+  if (!account || account.status === "anonymized") {
+    return { error: "invalidToken" };
+  }
+  if (account.status === "invited") {
+    return { error: "accountNotActivated" };
+  }
+  if (account.status === "suspended") {
+    return { error: "accountSuspended" };
   }
 
   const argon2 = await import("argon2");

@@ -484,7 +484,13 @@
     "newPassword": "Új jelszó",
     "confirmPassword": "Új jelszó megerősítése",
     "reset": "Jelszó visszaállítása",
-    "success": "A jelszó sikeresen visszaállítva"
+    "success": "A jelszó sikeresen visszaállítva",
+    "passwordTooShort": "A jelszónak legalább 8 karakterből kell állnia",
+    "passwordMismatch": "A jelszavak nem egyeznek",
+    "invalidToken": "A jelszó-visszaállító link érvénytelen vagy lejárt",
+    "tooManyAttempts": "Túl sok próbálkozás. Próbálja újra kicsit később.",
+    "accountNotActivated": "A fiók még nincs aktiválva. Fejezze be a regisztrációt a meghívó e-mailben található linkkel, vagy lépjen kapcsolatba az adminisztrátorral.",
+    "accountSuspended": "A fiók fel van függesztve. Lépjen kapcsolatba a lőtér adminisztrátorával."
   },
   "audit": {
     "title": "Audit napló",

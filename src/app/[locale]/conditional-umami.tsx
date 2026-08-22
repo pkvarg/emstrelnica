@@ -1,37 +1,37 @@
-"use client";
+'use client'
 
-import Script from "next/script";
-import { useEffect, useState } from "react";
+import Script from 'next/script'
+import { useEffect, useState } from 'react'
 
 export function ConditionalUmami() {
-  const [hasConsent, setHasConsent] = useState(false);
+  const [hasConsent, setHasConsent] = useState(false)
 
   useEffect(() => {
     const checkConsent = () => {
-      const consent = localStorage.getItem("CookieConsent");
-      if (consent === "true") {
-        setHasConsent(true);
+      const consent = localStorage.getItem('CookieConsent')
+      if (consent === 'true') {
+        setHasConsent(true)
       }
-    };
+    }
 
-    checkConsent();
+    checkConsent()
 
-    window.addEventListener("storage", checkConsent);
-    const interval = setInterval(checkConsent, 1000);
+    window.addEventListener('storage', checkConsent)
+    const interval = setInterval(checkConsent, 1000)
 
     return () => {
-      window.removeEventListener("storage", checkConsent);
-      clearInterval(interval);
-    };
-  }, []);
+      window.removeEventListener('storage', checkConsent)
+      clearInterval(interval)
+    }
+  }, [])
 
-  if (!hasConsent) return null;
+  if (!hasConsent) return null
 
   return (
-    <Script
+    <script
       defer
       src="https://analytics.pictusweb.com/script.js"
-      data-website-id="ecd53fd2-60e7-4545-b466-b03a621773de"
-    />
-  );
+      data-website-id="983a3e98-46bd-4c6f-8848-299d51be9319"
+    ></script>
+  )
 }

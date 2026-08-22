@@ -484,7 +484,13 @@
     "newPassword": "Nové heslo",
     "confirmPassword": "Potvrdiť nové heslo",
     "reset": "Obnoviť heslo",
-    "success": "Heslo bolo úspešne obnovené"
+    "success": "Heslo bolo úspešne obnovené",
+    "passwordTooShort": "Heslo musí mať aspoň 8 znakov",
+    "passwordMismatch": "Heslá sa nezhodujú",
+    "invalidToken": "Odkaz na obnovenie hesla je neplatný alebo expirovaný",
+    "tooManyAttempts": "Príliš veľa pokusov. Skúste to o chvíľu.",
+    "accountNotActivated": "Účet ešte nie je aktivovaný. Dokončite registráciu cez odkaz v pozvánkovom e-maile alebo kontaktujte správcu.",
+    "accountSuspended": "Účet je pozastavený. Kontaktujte správcu strelnice."
   },
   "audit": {
     "title": "Audit log",

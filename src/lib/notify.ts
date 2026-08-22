@@ -4,14 +4,14 @@ import { getContactFormBccList, isReminderSmsEnabled } from "@/lib/settings";
 import crypto from "crypto";
 
 const HONO_URL = process.env.NEXT_PUBLIC_HONO_API_URL || "https://hono.pictusweb.sk";
-const API_TOKEN = process.env.STRELNICA_API_TOKEN || "";
+const API_TOKEN = process.env.STRIELAJ_API_TOKEN || "";
 
 export async function callHono(
   endpoint: string,
   payload: Record<string, unknown>,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const res = await fetch(`${HONO_URL}/api/strelnica/${endpoint}`, {
+    const res = await fetch(`${HONO_URL}/api/strielaj/${endpoint}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

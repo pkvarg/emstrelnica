@@ -4,7 +4,7 @@ const HONO_URL = process.env.NEXT_PUBLIC_HONO_API_URL || "http://localhost:3013"
 
 export async function incrementVisitors() {
   try {
-    await fetch(`${HONO_URL}/api/visitors/strelnica/increase`, {
+    await fetch(`${HONO_URL}/api/visitors/strielaj/increase`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({}),
@@ -16,7 +16,7 @@ export async function incrementVisitors() {
 
 export async function incrementBots() {
   try {
-    await fetch(`${HONO_URL}/api/bots/strelnica/increase`, {
+    await fetch(`${HONO_URL}/api/bots/strielaj/increase`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({}),
@@ -28,7 +28,7 @@ export async function incrementBots() {
 
 export async function incrementEmails() {
   try {
-    await fetch(`${HONO_URL}/api/emails/strelnica/increase`, {
+    await fetch(`${HONO_URL}/api/emails/strielaj/increase`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({}),

@@ -10,7 +10,7 @@ export async function GET() {
   }
 
   try {
-    const res = await fetch(`${HONO_URL}/api/stats/strelnica`);
+    const res = await fetch(`${HONO_URL}/api/stats/strielaj`);
     const data = await res.json();
     return NextResponse.json(data);
   } catch {
