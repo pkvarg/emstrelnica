@@ -28,10 +28,10 @@ export function ConditionalUmami() {
   if (!hasConsent) return null
 
   return (
-    <script
-      defer
+    <Script
       src="https://analytics.pictusweb.com/script.js"
       data-website-id="983a3e98-46bd-4c6f-8848-299d51be9319"
-    ></script>
+      strategy="afterInteractive"
+    />
   )
 }
