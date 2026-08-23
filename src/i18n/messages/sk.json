@@ -374,6 +374,8 @@
     "date": "Dátum",
     "startTime": "Čas začiatku",
     "hours": "Počet hodín",
+    "boxCount": "Počet boxov",
+    "boxCountMax": "Maximálne {max} boxov",
     "guestCount": "Počet hostí",
     "note": "Poznámka",
     "submit": "Odoslať žiadosť",

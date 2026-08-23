@@ -103,6 +103,7 @@ export default function NewBookingPage() {
   );
   const [hours, setHours] = useState(1);
   const [groupSize, setGroupSize] = useState(1);
+  const [units, setUnits] = useState(1);
   const [wholeRange, setWholeRange] = useState(false);
 
   useEffect(() => {
@@ -155,6 +156,7 @@ export default function NewBookingPage() {
   // Reset per-range options when switching resources
   useEffect(() => {
     setWholeRange(false);
+    setUnits(1);
     setGroupSize((g) => Math.min(g, selected?.maxGroupSize ?? 1));
   }, [rangeId, selected?.maxGroupSize]);
 
@@ -169,7 +171,9 @@ export default function NewBookingPage() {
   }, [availability, date, rangeId]);
 
   const capacity = selected?.capacity ?? 1;
-  const unitsNeeded = wholeRange ? capacity : 1;
+  const canPickUnits =
+    !!selected && selected.capacity > 1 && selected.pricing?.type === "hourlyUnit";
+  const unitsNeeded = wholeRange ? capacity : canPickUnits ? units : 1;
   const slots = useMemo(
     () => computeSlots(dayRange, capacity),
     [dayRange, capacity],
@@ -188,9 +192,14 @@ export default function NewBookingPage() {
   const priceCents = useMemo(
     () =>
       selected
-        ? computeBookingPrice(selected.pricing, { hours, groupSize, wholeRange })
+        ? computeBookingPrice(selected.pricing, {
+            hours,
+            groupSize,
+            wholeRange,
+            units: unitsNeeded,
+          })
         : null,
-    [selected, hours, groupSize, wholeRange],
+    [selected, hours, groupSize, wholeRange, unitsNeeded],
   );
   const priceNote =
     selected?.pricing?.type === "info"
@@ -283,7 +292,28 @@ export default function NewBookingPage() {
             />
           </div>
 
-          {selected && selected.maxGroupSize > 1 && (
+          {canPickUnits && !wholeRange && (
+            <div className="space-y-2">
+              <Label>{t("boxCount")}</Label>
+              <Input
+                name="units"
+                type="number"
+                min="1"
+                max={capacity}
+                value={units}
+                onChange={(e) =>
+                  setUnits(
+                    Math.max(1, Math.min(capacity, parseInt(e.target.value, 10) || 1)),
+                  )
+                }
+              />
+              <p className="text-xs text-muted-foreground">
+                {t("boxCountMax", { max: capacity })}
+              </p>
+            </div>
+          )}
+
+          {selected && selected.maxGroupSize > 1 && unitsNeeded === 1 && (
             <div className="space-y-2">
               <Label>{t("groupSize")}</Label>
               <Input

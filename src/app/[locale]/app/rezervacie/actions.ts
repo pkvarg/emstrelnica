@@ -52,6 +52,7 @@ export async function requestBooking(
   const guestCount = parseInt(formData.get("guestCount") as string, 10) || 0;
   const userNote = (formData.get("userNote") as string) || null;
   const groupSize = parseInt(formData.get("groupSize") as string, 10) || 1;
+  const units = parseInt(formData.get("units") as string, 10) || 1;
   const wholeRange = formData.get("wholeRange") === "on";
 
   if (!rangeId || !date || !startTime) {
@@ -91,6 +92,7 @@ export async function requestBooking(
       userNote,
       groupSize,
       wholeRange,
+      units,
       autopilot,
       rulesConsentVersion: "v1",
     });

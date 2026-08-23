@@ -34,12 +34,14 @@ export interface PriceParams {
   hours: number;
   groupSize: number;
   wholeRange: boolean;
+  /** Boxes/lanes booked (hourlyUnit only). Default 1. */
+  units?: number;
 }
 
 /** Returns total in EUR cents, or null when the price is informational only. */
 export function computeBookingPrice(
   pricing: RangePricing | null | undefined,
-  { hours, groupSize, wholeRange }: PriceParams,
+  { hours, groupSize, wholeRange, units = 1 }: PriceParams,
 ): number | null {
   if (!pricing || hours <= 0) return null;
 
@@ -54,6 +56,10 @@ export function computeBookingPrice(
               ? w.from4hHourCents
               : w.hourCents;
         return rate * hours;
+      }
+      // Multiple boxes: flat per-box rate (N × unit price).
+      if (units > 1) {
+        return units * pricing.unitHourCents * hours;
       }
       const rate =
         groupSize === 2 && pricing.twoPersonUnitHourCents

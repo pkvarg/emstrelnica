@@ -55,6 +55,8 @@ export interface GuardedBookingInput {
   userNote?: string | null;
   groupSize?: number;
   wholeRange?: boolean;
+  /** Boxes/lanes to book. Clamped to [1, range.capacity]; wholeRange overrides. */
+  units?: number;
   autopilot?: boolean;
   rulesConsentVersion?: string;
 }
@@ -89,7 +91,9 @@ export async function insertBookingGuarded(
       throw new BookingConflictError("wholeRangeNotAllowed");
     }
 
-    const units = wholeRange ? range.capacity : 1;
+    const units = wholeRange
+      ? range.capacity
+      : Math.min(Math.max(1, Math.round(input.units ?? 1)), range.capacity);
 
     const overlapActive = and(
       inArray(bookings.status, [...ACTIVE_BOOKING_STATUSES]),
@@ -129,6 +133,7 @@ export async function insertBookingGuarded(
       hours,
       groupSize,
       wholeRange,
+      units,
     });
 
     const [booking] = await tx

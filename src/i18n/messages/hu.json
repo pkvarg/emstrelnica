@@ -374,6 +374,8 @@
     "date": "Dátum",
     "startTime": "Kezdési idő",
     "hours": "Órák száma",
+    "boxCount": "Boxok száma",
+    "boxCountMax": "Legfeljebb {max} box",
     "guestCount": "Vendégek száma",
     "note": "Megjegyzés",
     "submit": "Kérelem küldése",
