@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { requestBooking } from "../actions";
@@ -124,6 +124,29 @@ export default function NewBookingPage() {
     }
   }, [state, router]);
 
+  // The initial availability fetch only covers the next 14 days; when the
+  // selected date falls outside the loaded window, load that month too.
+  const fetchedMonths = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!date || !availability) return;
+    if (availability.days.some((d) => d.date === date)) return;
+    const month = date.slice(0, 7);
+    if (!/^\d{4}-\d{2}$/.test(month) || fetchedMonths.current.has(month)) return;
+    fetchedMonths.current.add(month);
+    fetch(`/api/availability?month=${month}`)
+      .then((r) => r.json())
+      .then((next: AvailabilityResponse) =>
+        setAvailability((prev) => {
+          if (!prev) return next;
+          const loaded = new Set(next.days.map((d) => d.date));
+          return { days: [...next.days, ...prev.days.filter((d) => !loaded.has(d.date))] };
+        }),
+      )
+      .catch(() => {
+        fetchedMonths.current.delete(month);
+      });
+  }, [date, availability]);
+
   const selected = useMemo(
     () => ranges.find((r) => r.id === rangeId),
     [ranges, rangeId],
@@ -151,6 +174,16 @@ export default function NewBookingPage() {
     () => computeSlots(dayRange, capacity),
     [dayRange, capacity],
   );
+
+  // Keep the start-time select within the day's actual opening hours; snap to
+  // the first bookable slot when the current pick isn't available.
+  useEffect(() => {
+    if (slots.length === 0) return;
+    const bookable = slots.filter((s) => s.free >= unitsNeeded).map((s) => s.hour);
+    if (bookable.length > 0 && !bookable.includes(startTime)) {
+      setStartTime(bookable[0]);
+    }
+  }, [slots, unitsNeeded, startTime]);
 
   const priceCents = useMemo(
     () =>
@@ -223,12 +256,15 @@ export default function NewBookingPage() {
               onChange={(e) => setStartTime(e.target.value)}
               required
             >
-              {Array.from({ length: 17 }, (_, i) => {
-                const h = (i + 6).toString().padStart(2, "0") + ":00";
-                return (
-                  <option key={h} value={h}>{h}</option>
-                );
-              })}
+              {(slots.length > 0
+                ? slots.map((s) => ({ hour: s.hour, disabled: s.free < unitsNeeded }))
+                : Array.from({ length: 17 }, (_, i) => ({
+                    hour: (i + 6).toString().padStart(2, "0") + ":00",
+                    disabled: false,
+                  }))
+              ).map(({ hour, disabled }) => (
+                <option key={hour} value={hour} disabled={disabled}>{hour}</option>
+              ))}
             </select>
           </div>
 

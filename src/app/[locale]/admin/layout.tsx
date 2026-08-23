@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AdminNav } from "./nav";
+import { RequestNotifier } from "./request-notifier";
 import { enforceConsentUpToDate } from "@/lib/consent";
 
 export default async function AdminLayout({
@@ -42,6 +43,7 @@ export default async function AdminLayout({
         locale={locale}
       />
       <main className="flex-1 p-6">{children}</main>
+      <RequestNotifier />
     </div>
   );
 }

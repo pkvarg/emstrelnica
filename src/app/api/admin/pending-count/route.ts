@@ -11,9 +11,12 @@ export async function GET() {
   }
 
   const [row] = await db
-    .select({ count: sql<number>`count(*)::int` })
+    .select({
+      count: sql<number>`count(*)::int`,
+      latest: sql<string | null>`to_char(max(requested_at) at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`,
+    })
     .from(bookings)
     .where(eq(bookings.status, "requested"));
 
-  return NextResponse.json({ count: row?.count ?? 0 });
+  return NextResponse.json({ count: row?.count ?? 0, latest: row?.latest ?? null });
 }
