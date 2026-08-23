@@ -1,6 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { db } from "@/db";
-import { bookings, users } from "@/db/schema";
+import { bookings, users, ranges } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { verifyCheckInToken } from "@/lib/check-in-token";
 import { fmtDate, fmtTime, fmtDateTime } from "@/lib/format";
@@ -30,7 +30,8 @@ export default async function CheckInPage({
     .select({
       id: bookings.id,
       status: bookings.status,
-      rangeId: bookings.rangeId,
+      rangeNameSk: ranges.nameSk,
+      rangeNameHu: ranges.nameHu,
       startsAt: bookings.startsAt,
       endsAt: bookings.endsAt,
       checkInAt: bookings.checkInAt,
@@ -39,6 +40,7 @@ export default async function CheckInPage({
     })
     .from(bookings)
     .innerJoin(users, eq(bookings.userId, users.id))
+    .innerJoin(ranges, eq(bookings.rangeId, ranges.id))
     .where(eq(bookings.id, bookingId))
     .limit(1);
 
@@ -88,7 +90,9 @@ export default async function CheckInPage({
             </div>
             <div className="flex justify-between">
               <dt className="text-zinc-500">{t("range")}</dt>
-              <dd className="text-zinc-200">{row.rangeId}</dd>
+              <dd className="text-zinc-200">
+                {locale === "hu" ? row.rangeNameHu : row.rangeNameSk}
+              </dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-zinc-500">{t("date")}</dt>

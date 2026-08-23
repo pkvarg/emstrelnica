@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { bookings, users } from "@/db/schema";
+import { bookings, users, ranges } from "@/db/schema";
 import { eq, asc, and, gte, lte } from "drizzle-orm";
 import { getLocale, getTranslations } from "next-intl/server";
 import { PendingQueue } from "./pending-queue";
@@ -23,7 +23,7 @@ export default async function AdminDashboard({
   const pending = await db
     .select({
       id: bookings.id,
-      rangeId: bookings.rangeId,
+      rangeId: locale === "hu" ? ranges.nameHu : ranges.nameSk,
       startsAt: bookings.startsAt,
       endsAt: bookings.endsAt,
       guestCount: bookings.guestCount,
@@ -35,6 +35,7 @@ export default async function AdminDashboard({
     })
     .from(bookings)
     .innerJoin(users, eq(bookings.userId, users.id))
+    .innerJoin(ranges, eq(bookings.rangeId, ranges.id))
     .where(eq(bookings.status, "requested"))
     .orderBy(asc(bookings.requestedAt));
 
@@ -46,7 +47,7 @@ export default async function AdminDashboard({
   const todayBookings = await db
     .select({
       id: bookings.id,
-      rangeId: bookings.rangeId,
+      rangeId: locale === "hu" ? ranges.nameHu : ranges.nameSk,
       startsAt: bookings.startsAt,
       endsAt: bookings.endsAt,
       status: bookings.status,
@@ -55,6 +56,7 @@ export default async function AdminDashboard({
     })
     .from(bookings)
     .innerJoin(users, eq(bookings.userId, users.id))
+    .innerJoin(ranges, eq(bookings.rangeId, ranges.id))
     .where(
       and(
         gte(bookings.startsAt, todayStart),
