@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { bookings, users } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { notifyNoShow } from "@/lib/notify";
+import { getRangeDisplayName } from "@/lib/range-name";
 import { fmtDate } from "@/lib/format";
 import type { PgBoss } from "pg-boss";
 
@@ -40,7 +41,7 @@ export async function registerNoShowHandler(boss: PgBoss) {
       await notifyNoShow({
         email: row.email,
         memberName: `${row.firstName} ${row.lastName}`,
-        rangeId: row.rangeId,
+        rangeId: await getRangeDisplayName(row.rangeId, row.locale),
         date: fmtDate(row.startsAt),
         locale: row.locale,
         bookingId,

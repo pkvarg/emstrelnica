@@ -25,6 +25,7 @@ export async function OpeningHoursPanel() {
         weekday: openingHoursTemplates.weekday,
         startTime: openingHoursTemplates.startTime,
         endTime: openingHoursTemplates.endTime,
+        validFrom: openingHoursTemplates.validFrom,
       })
       .from(openingHoursTemplates)
       .where(
@@ -38,12 +39,18 @@ export async function OpeningHoursPanel() {
       ),
   ]);
 
-  const byRangeDay = new Map<string, { start: string; end: string }>();
+  // Several templates can match a weekday — the one with the latest validFrom wins.
+  const byRangeDay = new Map<string, { start: string; end: string; validFrom: string }>();
   for (const h of hours) {
-    byRangeDay.set(`${h.rangeId}:${h.weekday}`, {
-      start: hm(h.startTime),
-      end: hm(h.endTime),
-    });
+    const key = `${h.rangeId}:${h.weekday}`;
+    const prev = byRangeDay.get(key);
+    if (!prev || h.validFrom > prev.validFrom) {
+      byRangeDay.set(key, {
+        start: hm(h.startTime),
+        end: hm(h.endTime),
+        validFrom: h.validFrom,
+      });
+    }
   }
 
   const weekdayLabels = t.raw("openingHours.days") as string[];

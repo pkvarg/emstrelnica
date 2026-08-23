@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import { hashToken } from "@/lib/tokens";
 import { invalidateSiblingTokens } from "@/lib/approval-tokens";
 import { writeAudit } from "@/lib/audit";
+import { getRangeDisplayName } from "@/lib/range-name";
 import { getClientIp } from "@/lib/ip";
 import { notifyMemberBookingApproved, notifyMemberBookingDeclined } from "@/lib/notify";
 import { fmtDate, fmtTime } from "@/lib/format";
@@ -128,7 +129,7 @@ async function notifyMemberAfterDecision(
   const common = {
     email: row.email,
     memberName: `${row.firstName} ${row.lastName}`,
-    rangeId: row.rangeId,
+    rangeId: await getRangeDisplayName(row.rangeId, row.locale),
     date: fmtDate(row.startsAt),
     time: fmtTime(row.startsAt),
     locale: row.locale,

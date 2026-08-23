@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { bookings, users } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { isWithinOpeningHours, isClosedDuring } from "@/lib/availability";
+import { getRangeDisplayName } from "@/lib/range-name";
 import {
   insertBookingGuarded,
   BookingConflictError,
@@ -151,6 +152,7 @@ export async function requestBooking(
 
       const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:5001";
       const locale = member?.locale || "sk";
+      const rangeName = await getRangeDisplayName(rangeId, locale);
 
       const admins = adminRows.map((a) => {
         if (autopilot) {
@@ -180,7 +182,7 @@ export async function requestBooking(
       await notifyAdminsBookingRequest({
         memberName: member ? `${member.firstName} ${member.lastName}` : "—",
         memberEmail: member?.email || "",
-        rangeId,
+        rangeId: rangeName,
         date: fmtDate(startsAt),
         time: fmtTime(startsAt),
         hours,
@@ -197,7 +199,7 @@ export async function requestBooking(
         await notifyMemberBookingApproved({
           email: member.email,
           memberName: `${member.firstName} ${member.lastName}`.trim(),
-          rangeId,
+          rangeId: rangeName,
           date: fmtDate(startsAt),
           time: fmtTime(startsAt),
           locale,
@@ -284,7 +286,7 @@ export async function cancelBooking(bookingId: string, reason?: string) {
       await notifyMemberBookingCancelled({
         email: member.email,
         memberName: `${member.firstName} ${member.lastName}`,
-        rangeId: booking.rangeId,
+        rangeId: await getRangeDisplayName(booking.rangeId, member.locale),
         date: fmtDate(booking.startsAt),
         time: fmtTime(booking.startsAt),
         cancelledBy: "member",

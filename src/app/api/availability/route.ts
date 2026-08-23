@@ -118,13 +118,17 @@ export async function GET(req: NextRequest) {
     const weekday = bratislavaPartsOf(date).weekday;
 
     const dayRanges = allRanges.map((range) => {
-      const rangeHours = hours.find(
-        (h) =>
-          h.rangeId === range.id &&
-          h.weekday === weekday &&
-          h.validFrom <= dateStr &&
-          (!h.validTo || h.validTo >= dateStr),
-      );
+      // Several templates can match a day (e.g. an old row plus a newer
+      // override) — the one with the latest validFrom wins.
+      const rangeHours = hours
+        .filter(
+          (h) =>
+            h.rangeId === range.id &&
+            h.weekday === weekday &&
+            h.validFrom <= dateStr &&
+            (!h.validTo || h.validTo >= dateStr),
+        )
+        .sort((a, b) => (a.validFrom > b.validFrom ? -1 : 1))[0];
 
       const rangeClosure = activClosures.find(
         (c) =>

@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { bookings, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { writeAudit } from "@/lib/audit";
+import { getRangeDisplayName } from "@/lib/range-name";
 import { adminApprovalTokens } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 import { notifyMemberBookingApproved, notifyMemberBookingDeclined } from "@/lib/notify";
@@ -96,7 +97,7 @@ async function notifyMemberAfterInlineDecision(
   const common = {
     email: row.email,
     memberName: `${row.firstName} ${row.lastName}`,
-    rangeId: row.rangeId,
+    rangeId: await getRangeDisplayName(row.rangeId, row.locale),
     date: fmtDate(row.startsAt),
     time: fmtTime(row.startsAt),
     locale: row.locale,

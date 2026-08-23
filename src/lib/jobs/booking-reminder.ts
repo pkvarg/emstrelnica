@@ -2,6 +2,7 @@ import { db } from '@/db'
 import { bookings, users } from '@/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { notifyBookingReminder } from '@/lib/notify'
+import { getRangeDisplayName } from '@/lib/range-name'
 import { createCheckInToken } from '@/lib/check-in-token'
 import { fmtDate, fmtTime } from '@/lib/format'
 import type { PgBoss } from 'pg-boss'
@@ -34,7 +35,7 @@ export async function registerBookingReminderHandler(boss: PgBoss) {
         email: user.email,
         phone: user.phoneE164,
         memberName: `${user.firstName} ${user.lastName}`,
-        rangeId: booking.rangeId,
+        rangeId: await getRangeDisplayName(booking.rangeId, user.locale),
         date: fmtDate(booking.startsAt, user.locale),
         time: fmtTime(booking.startsAt, user.locale),
         checkInUrl,
