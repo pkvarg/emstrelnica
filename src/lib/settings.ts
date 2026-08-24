@@ -104,6 +104,38 @@ export async function setAutopilotEnabled(
     });
 }
 
+/**
+ * When true (default), a booking without guest or admin check-in is
+ * auto-marked as no-show 15 minutes after start. When false, the sweep is
+ * skipped and the booking simply auto-completes at end time.
+ */
+export async function isAutoNoshowEnabled(): Promise<boolean> {
+  const [row] = await db
+    .select({ v: appSettings.autoNoshowEnabled })
+    .from(appSettings)
+    .where(eq(appSettings.id, SINGLETON_ID))
+    .limit(1);
+  return row?.v ?? true;
+}
+
+export async function setAutoNoshowEnabled(
+  enabled: boolean,
+  updatedBy: string,
+): Promise<void> {
+  await db
+    .insert(appSettings)
+    .values({
+      id: SINGLETON_ID,
+      autoNoshowEnabled: enabled,
+      updatedBy,
+      updatedAt: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: appSettings.id,
+      set: { autoNoshowEnabled: enabled, updatedBy, updatedAt: new Date() },
+    });
+}
+
 export async function getBookingRequestsBccExtra(): Promise<string> {
   const [row] = await db
     .select({ v: appSettings.bookingRequestsBccExtra })

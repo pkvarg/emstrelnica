@@ -30,6 +30,7 @@ export function AddHoursForm({ ranges }: { ranges: Range[] }) {
         <div className="space-y-1">
           <Label>{t("range")}</Label>
           <select name="rangeId" className="w-full rounded-md border px-3 py-2 text-sm" required>
+            <option value="__all__">{t("allRanges")}</option>
             {ranges.map((r) => (
               <option key={r.id} value={r.id}>{r.nameSk}</option>
             ))}

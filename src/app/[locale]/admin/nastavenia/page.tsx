@@ -2,10 +2,12 @@ import { getTranslations } from "next-intl/server";
 import {
   getBookingRequestsBccExtra,
   getContactFormBccExtra,
+  isAutoNoshowEnabled,
   isAutopilotEnabled,
   isReminderSmsEnabled,
 } from "@/lib/settings";
 import { ReminderSmsForm } from "./reminder-sms-form";
+import { AutoNoshowForm } from "./auto-noshow-form";
 import { BookingRecipientsForm } from "./booking-recipients-form";
 import { ContactFormSettings } from "./contact-form-settings";
 import { AutopilotForm } from "./autopilot-form";
@@ -19,6 +21,7 @@ export default async function AdminSettingsPage() {
   const bccExtra = await getContactFormBccExtra();
   const bookingBccExtra = await getBookingRequestsBccExtra();
   const autopilot = await isAutopilotEnabled();
+  const autoNoshow = await isAutoNoshowEnabled();
   const t = await getTranslations("settings");
 
   const adminRows = await db
@@ -72,6 +75,19 @@ export default async function AdminSettingsPage() {
 
         <div className="mt-4">
           <AutopilotForm current={autopilot} />
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold text-zinc-100">
+          {t("autoNoshowTitle")}
+        </h2>
+        <p className="mt-1 text-sm text-zinc-400">
+          {t("autoNoshowDescription")}
+        </p>
+
+        <div className="mt-4">
+          <AutoNoshowForm current={autoNoshow} />
         </div>
       </section>
 

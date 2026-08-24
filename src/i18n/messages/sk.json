@@ -350,7 +350,8 @@
       "Piatok",
       "Sobota"
     ],
-    "daysSuffix": "({count} dní)"
+    "daysSuffix": "({count} dní)",
+    "allRanges": "Všetky strelnice"
   },
   "closures": {
     "title": "Uzávierky",
@@ -662,7 +663,11 @@
     "contactFormBccExtraLabel": "Ďalšie BCC e-maily (voliteľné)",
     "contactFormBccExtraPlaceholder": "napr. info@strelnica.sk, niekto@firma.sk",
     "contactFormRecipientsNone": "Žiadny admin ani BCC — použije sa predvolená adresa nakonfigurovaná na serveri.",
-    "contactFormInvalidEmail": "Neplatná e-mailová adresa v poli BCC."
+    "contactFormInvalidEmail": "Neplatná e-mailová adresa v poli BCC.",
+    "autoNoshowTitle": "Automatická neúčasť",
+    "autoNoshowDescription": "Keď je zapnutá, rezervácia bez potvrdenia príchodu (hosťom alebo administrátorom) sa 15 minút po začiatku automaticky označí ako neúčasť. Keď je vypnutá, rezervácia sa po skončení označí ako dokončená.",
+    "autoNoshowOn": "Automatická neúčasť zapnutá",
+    "autoNoshowOff": "Automatická neúčasť vypnutá"
   },
   "rateLimits": {
     "title": "Rate Limits",

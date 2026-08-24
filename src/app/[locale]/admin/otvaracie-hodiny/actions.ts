@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { openingHoursTemplates } from "@/db/schema";
+import { openingHoursTemplates, ranges } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
@@ -32,16 +32,29 @@ export async function addOpeningHours(
     return { error: t("invalidWeekday") };
   }
 
+  // "__all__" applies the same hours to every active range at once.
+  const targetRangeIds =
+    rangeId === "__all__"
+      ? (
+          await db
+            .select({ id: ranges.id })
+            .from(ranges)
+            .where(eq(ranges.active, true))
+        ).map((r) => r.id)
+      : [rangeId];
+
   await db.insert(openingHoursTemplates).values(
-    weekdays.map((weekday) => ({
-      rangeId,
-      weekday,
-      startTime,
-      endTime,
-      validFrom,
-      validTo,
-      createdBy: session.user.id,
-    })),
+    targetRangeIds.flatMap((rid) =>
+      weekdays.map((weekday) => ({
+        rangeId: rid,
+        weekday,
+        startTime,
+        endTime,
+        validFrom,
+        validTo,
+        createdBy: session.user.id,
+      })),
+    ),
   );
 
   revalidatePath("/admin/otvaracie-hodiny");

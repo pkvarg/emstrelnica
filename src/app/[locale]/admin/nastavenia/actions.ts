@@ -4,9 +4,11 @@ import { auth } from "@/lib/auth";
 import {
   getBookingRequestsBccExtra,
   getContactFormBccExtra,
+  isAutoNoshowEnabled,
   isAutopilotEnabled,
   isReminderSmsEnabled,
   parseBccList,
+  setAutoNoshowEnabled,
   setAutopilotEnabled,
   setBookingRequestsBccExtra,
   setContactFormBccExtra,
@@ -157,6 +159,38 @@ export async function updateAutopilotEnabled(
     entityId: "autopilot",
     before: { autopilotEnabled: before },
     after: { autopilotEnabled: next },
+  });
+
+  revalidatePath("/admin/nastavenia");
+  return { success: true };
+}
+
+export async function updateAutoNoshowEnabled(
+  _prev: { error?: string; success?: boolean } | null,
+  formData: FormData,
+) {
+  const t = await getTranslations("admin.errors");
+  const session = await auth();
+  if (!session?.user || session.user.role !== "admin") {
+    return { error: t("unauthorized") };
+  }
+
+  const next = formData.get("autoNoshowEnabled") === "1";
+  const before = await isAutoNoshowEnabled();
+
+  if (before === next) {
+    return { success: true };
+  }
+
+  await setAutoNoshowEnabled(next, session.user.id);
+
+  await writeAudit({
+    actorUserId: session.user.id,
+    action: "update_settings",
+    entityType: "app_settings",
+    entityId: "auto_noshow",
+    before: { autoNoshowEnabled: before },
+    after: { autoNoshowEnabled: next },
   });
 
   revalidatePath("/admin/nastavenia");

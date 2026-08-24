@@ -350,7 +350,8 @@
       "Péntek",
       "Szombat"
     ],
-    "daysSuffix": "({count} nap)"
+    "daysSuffix": "({count} nap)",
+    "allRanges": "Minden lőtér"
   },
   "closures": {
     "title": "Zárások",
@@ -662,7 +663,11 @@
     "contactFormBccExtraLabel": "További BCC e-mailek (opcionális)",
     "contactFormBccExtraPlaceholder": "pl. info@strelnica.sk, valaki@ceg.hu",
     "contactFormRecipientsNone": "Nincs admin és nincs BCC sem — a szerveren beállított alapértelmezett cím lesz használva.",
-    "contactFormInvalidEmail": "Érvénytelen e-mail cím a BCC mezőben."
+    "contactFormInvalidEmail": "Érvénytelen e-mail cím a BCC mezőben.",
+    "autoNoshowTitle": "Automatikus meg nem jelenés",
+    "autoNoshowDescription": "Ha be van kapcsolva, az érkezés-megerősítés nélküli foglalás (vendég vagy admin által) a kezdés után 15 perccel automatikusan meg nem jelenésként lesz megjelölve. Ha ki van kapcsolva, a foglalás a végén befejezettként zárul.",
+    "autoNoshowOn": "Automatikus meg nem jelenés bekapcsolva",
+    "autoNoshowOff": "Automatikus meg nem jelenés kikapcsolva"
   },
   "rateLimits": {
     "title": "Rate Limits",

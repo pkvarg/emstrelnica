@@ -10,6 +10,9 @@ export const appSettings = pgTable(
     contactFormBccExtra: text("contact_form_bcc_extra"),
     bookingRequestsBccExtra: text("booking_requests_bcc_extra"),
     autopilotEnabled: boolean("autopilot_enabled").notNull().default(false),
+    /** When false, un-confirmed bookings are NOT auto-marked as no-show;
+     *  they simply auto-complete at end time. */
+    autoNoshowEnabled: boolean("auto_noshow_enabled").notNull().default(true),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .defaultNow()
       .notNull(),

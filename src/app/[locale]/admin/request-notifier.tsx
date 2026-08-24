@@ -3,21 +3,54 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
-import { Bell, X } from "lucide-react";
+import { Bell, UserCheck, X } from "lucide-react";
 
 const POLL_MS = 20_000;
 const TOAST_MS = 12_000;
 
+interface CheckinItem {
+  member: string;
+  rangeSk: string;
+  rangeHu: string;
+  startsAt: string;
+}
+
+interface AttentionPayload {
+  count?: number;
+  latest?: string | null;
+  checkins?: {
+    count: number;
+    latest: string | null;
+    items: CheckinItem[];
+  };
+}
+
 const texts = {
   sk: {
-    title: "Nová žiadosť o rezerváciu",
-    body: (n: number) => (n === 1 ? "1 žiadosť čaká na schválenie" : `${n} žiadostí čaká na schválenie`),
-    open: "Otvoriť žiadosti",
+    requestTitle: "Nová žiadosť o rezerváciu",
+    requestBody: (n: number) =>
+      n === 1 ? "1 žiadosť čaká na schválenie" : `${n} žiadostí čaká na schválenie`,
+    requestOpen: "Otvoriť žiadosti",
+    checkinTitle: "Potvrďte príchod",
+    checkinBody: (item: CheckinItem | undefined, n: number) =>
+      item
+        ? `${item.member} — ${item.rangeSk}${n > 1 ? ` (+${n - 1} ďalších)` : ""}`
+        : `${n} rezervácií čaká na potvrdenie príchodu`,
+    checkinOpen: "Otvoriť prehľad",
+    pill: (n: number) =>
+      n === 1 ? "1 nepotvrdený príchod" : `${n} nepotvrdené príchody`,
   },
   hu: {
-    title: "Új foglalási kérelem",
-    body: (n: number) => `${n} kérelem vár jóváhagyásra`,
-    open: "Kérelmek megnyitása",
+    requestTitle: "Új foglalási kérelem",
+    requestBody: (n: number) => `${n} kérelem vár jóváhagyásra`,
+    requestOpen: "Kérelmek megnyitása",
+    checkinTitle: "Erősítse meg az érkezést",
+    checkinBody: (item: CheckinItem | undefined, n: number) =>
+      item
+        ? `${item.member} — ${item.rangeHu}${n > 1 ? ` (+${n - 1} további)` : ""}`
+        : `${n} foglalás vár érkezés-megerősítésre`,
+    checkinOpen: "Áttekintés megnyitása",
+    pill: (n: number) => `${n} meg nem erősített érkezés`,
   },
 };
 
@@ -50,17 +83,25 @@ function playChime() {
 }
 
 /**
- * Polls the pending-requests endpoint and, when a NEW request arrives while the
- * admin has the app open, notifies via: in-page toast, chime, tab-title badge,
- * and an OS notification when the tab is in the background.
+ * Polls the admin-attention endpoint and notifies about two events while the
+ * admin has the app open: new booking requests, and bookings whose start time
+ * passed without a confirmed arrival. Channels: in-page toast, chime,
+ * tab-title badge, OS notification when the tab is hidden — plus a persistent
+ * pill while any arrival is unconfirmed (independent of the auto-no-show
+ * setting).
  */
 export function RequestNotifier() {
   const locale = useLocale() as "sk" | "hu";
   const t = texts[locale] ?? texts.sk;
 
-  const [count, setCount] = useState(0);
-  const [toastOpen, setToastOpen] = useState(false);
-  const latestRef = useRef<string | null>(null);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [checkins, setCheckins] = useState<{ count: number; items: CheckinItem[] }>({
+    count: 0,
+    items: [],
+  });
+  const [toast, setToast] = useState<null | "request" | "checkin">(null);
+  const latestRequestRef = useRef<string | null>(null);
+  const latestCheckinRef = useRef<string | null>(null);
   const initializedRef = useRef(false);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -79,37 +120,51 @@ export function RequestNotifier() {
   useEffect(() => {
     let cancelled = false;
 
+    const notify = (kind: "request" | "checkin", title: string, body: string) => {
+      playChime();
+      setToast(kind);
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = setTimeout(() => setToast(null), TOAST_MS);
+      if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
+        new Notification(title, { body, tag: `booking-${kind}` });
+      }
+    };
+
     const load = async () => {
       try {
         const res = await fetch("/api/admin/pending-count", { cache: "no-store" });
-        const data: { count?: number; latest?: string | null } = await res.json();
+        const data: AttentionPayload = await res.json();
         if (cancelled) return;
 
         const nextCount = data.count ?? 0;
         const nextLatest = data.latest ?? null;
-        const isNewRequest =
+        const nextCheckins = data.checkins ?? { count: 0, latest: null, items: [] };
+
+        const newRequest =
           initializedRef.current &&
           nextLatest !== null &&
-          (latestRef.current === null || nextLatest > latestRef.current);
+          (latestRequestRef.current === null || nextLatest > latestRequestRef.current);
+        const newCheckin =
+          initializedRef.current &&
+          nextCheckins.latest !== null &&
+          (latestCheckinRef.current === null ||
+            nextCheckins.latest > latestCheckinRef.current);
 
-        if (nextLatest !== null || nextCount === 0) {
-          latestRef.current = nextLatest ?? latestRef.current;
-        }
+        if (nextLatest !== null) latestRequestRef.current = nextLatest;
+        if (nextCheckins.latest !== null) latestCheckinRef.current = nextCheckins.latest;
         initializedRef.current = true;
-        setCount(nextCount);
+        setPendingCount(nextCount);
+        setCheckins({ count: nextCheckins.count, items: nextCheckins.items });
 
-        if (isNewRequest && nextCount > 0) {
-          playChime();
-          setToastOpen(true);
-          if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-          toastTimerRef.current = setTimeout(() => setToastOpen(false), TOAST_MS);
-          if (
-            "Notification" in window &&
-            Notification.permission === "granted" &&
-            document.hidden
-          ) {
-            new Notification(t.title, { body: t.body(nextCount), tag: "booking-request" });
-          }
+        // Check-in events outrank request events when both land in one poll.
+        if (newCheckin && nextCheckins.count > 0) {
+          notify(
+            "checkin",
+            t.checkinTitle,
+            t.checkinBody(nextCheckins.items[0], nextCheckins.count),
+          );
+        } else if (newRequest && nextCount > 0) {
+          notify("request", t.requestTitle, t.requestBody(nextCount));
         }
       } catch {
         // transient network error — next poll retries
@@ -129,43 +184,76 @@ export function RequestNotifier() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Tab-title badge: "(n) …" while requests are pending.
+  // Tab-title badge: "(n) …" while anything needs attention.
   useEffect(() => {
+    const attention = pendingCount + checkins.count;
     const base = document.title.replace(/^\(\d+\)\s/, "");
-    document.title = count > 0 ? `(${count}) ${base}` : base;
-  }, [count]);
+    document.title = attention > 0 ? `(${attention}) ${base}` : base;
+  }, [pendingCount, checkins.count]);
 
-  if (!toastOpen) return null;
+  const toastContent =
+    toast === "request"
+      ? {
+          icon: <Bell size={16} />,
+          title: t.requestTitle,
+          body: t.requestBody(pendingCount),
+          cta: t.requestOpen,
+        }
+      : toast === "checkin"
+        ? {
+            icon: <UserCheck size={16} />,
+            title: t.checkinTitle,
+            body: t.checkinBody(checkins.items[0], checkins.count),
+            cta: t.checkinOpen,
+          }
+        : null;
 
   return (
-    <div
-      role="status"
-      className="fixed bottom-5 right-5 z-[100] w-80 rounded-lg border border-brand/60 bg-zinc-900 p-4 shadow-xl shadow-black/40"
-    >
-      <div className="flex items-start gap-3">
-        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand/15 text-brand">
-          <Bell size={16} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-zinc-100">{t.title}</p>
-          <p className="mt-0.5 text-xs text-zinc-400">{t.body(count)}</p>
-          <Link
-            href={`/${locale}/admin`}
-            onClick={() => setToastOpen(false)}
-            className="mt-2 inline-block rounded-sm bg-brand px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-zinc-950 transition-colors hover:bg-brand/85"
-          >
-            {t.open}
-          </Link>
-        </div>
-        <button
-          type="button"
-          onClick={() => setToastOpen(false)}
-          className="shrink-0 text-zinc-500 transition-colors hover:text-zinc-200"
-          aria-label="Close"
+    <>
+      {toastContent && (
+        <div
+          role="status"
+          className="fixed bottom-16 right-5 z-[100] w-80 rounded-lg border border-brand/60 bg-zinc-900 p-4 shadow-xl shadow-black/40"
         >
-          <X size={16} />
-        </button>
-      </div>
-    </div>
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand/15 text-brand">
+              {toastContent.icon}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-zinc-100">{toastContent.title}</p>
+              <p className="mt-0.5 text-xs text-zinc-400">{toastContent.body}</p>
+              <Link
+                href={`/${locale}/admin`}
+                onClick={() => setToast(null)}
+                className="mt-2 inline-block rounded-sm bg-brand px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-zinc-950 transition-colors hover:bg-brand/85"
+              >
+                {toastContent.cta}
+              </Link>
+            </div>
+            <button
+              type="button"
+              onClick={() => setToast(null)}
+              className="shrink-0 text-zinc-500 transition-colors hover:text-zinc-200"
+              aria-label="Close"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {checkins.count > 0 && (
+        <Link
+          href={`/${locale}/admin`}
+          className="fixed bottom-5 right-5 z-[99] flex items-center gap-2 rounded-full border border-brand/70 bg-brand/15 px-4 py-2 text-xs font-semibold text-brand shadow-lg shadow-black/30 backdrop-blur transition-colors hover:bg-brand/25"
+          title={checkins.items
+            .map((i) => `${i.member} — ${locale === "hu" ? i.rangeHu : i.rangeSk}`)
+            .join("\n")}
+        >
+          <UserCheck size={14} />
+          {t.pill(checkins.count)}
+        </Link>
+      )}
+    </>
   );
 }

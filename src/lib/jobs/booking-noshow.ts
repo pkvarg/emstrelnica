@@ -3,6 +3,7 @@ import { bookings, users } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { notifyNoShow } from "@/lib/notify";
 import { getRangeDisplayName } from "@/lib/range-name";
+import { isAutoNoshowEnabled } from "@/lib/settings";
 import { fmtDate } from "@/lib/format";
 import type { PgBoss } from "pg-boss";
 
@@ -11,6 +12,10 @@ export const BOOKING_NOSHOW_SWEEP = "booking.noShowSweep";
 export async function registerNoShowHandler(boss: PgBoss) {
   await boss.createQueue(BOOKING_NOSHOW_SWEEP);
   await boss.work<{ bookingId: string }>(BOOKING_NOSHOW_SWEEP, async (jobs) => {
+    // Admin toggle: when disabled, never auto-mark no-shows — the booking
+    // stays approved and auto-completes at end time instead.
+    if (!(await isAutoNoshowEnabled())) return;
+
     for (const job of jobs) {
       const { bookingId } = job.data;
 
