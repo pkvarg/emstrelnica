@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth";
 import {
   getBookingRequestsBccExtra,
+  getCancelNoticeHours,
   getContactFormBccExtra,
   isAutoNoshowEnabled,
   isAutopilotEnabled,
@@ -11,6 +12,7 @@ import {
   setAutoNoshowEnabled,
   setAutopilotEnabled,
   setBookingRequestsBccExtra,
+  setCancelNoticeHours,
   setContactFormBccExtra,
   setReminderSmsEnabled,
 } from "@/lib/settings";
@@ -191,6 +193,41 @@ export async function updateAutoNoshowEnabled(
     entityId: "auto_noshow",
     before: { autoNoshowEnabled: before },
     after: { autoNoshowEnabled: next },
+  });
+
+  revalidatePath("/admin/nastavenia");
+  return { success: true };
+}
+
+export async function updateCancelNoticeHours(
+  _prev: { error?: string; success?: boolean } | null,
+  formData: FormData,
+) {
+  const t = await getTranslations("admin.errors");
+  const session = await auth();
+  if (!session?.user || session.user.role !== "admin") {
+    return { error: t("unauthorized") };
+  }
+
+  const raw = parseInt(formData.get("cancelNoticeHours") as string, 10);
+  if (isNaN(raw) || raw < 0 || raw > 168) {
+    return { error: t("allFieldsRequired") };
+  }
+
+  const before = await getCancelNoticeHours();
+  if (before === raw) {
+    return { success: true };
+  }
+
+  await setCancelNoticeHours(raw, session.user.id);
+
+  await writeAudit({
+    actorUserId: session.user.id,
+    action: "update_settings",
+    entityType: "app_settings",
+    entityId: "cancel_notice",
+    before: { cancelNoticeHours: before },
+    after: { cancelNoticeHours: raw },
   });
 
   revalidatePath("/admin/nastavenia");

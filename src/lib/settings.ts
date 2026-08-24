@@ -136,6 +136,34 @@ export async function setAutoNoshowEnabled(
     });
 }
 
+/** Minimum notice in hours a member must give to cancel. 0 = up to start. */
+export async function getCancelNoticeHours(): Promise<number> {
+  const [row] = await db
+    .select({ v: appSettings.cancelNoticeHours })
+    .from(appSettings)
+    .where(eq(appSettings.id, SINGLETON_ID))
+    .limit(1);
+  return row?.v ?? 2;
+}
+
+export async function setCancelNoticeHours(
+  hours: number,
+  updatedBy: string,
+): Promise<void> {
+  await db
+    .insert(appSettings)
+    .values({
+      id: SINGLETON_ID,
+      cancelNoticeHours: hours,
+      updatedBy,
+      updatedAt: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: appSettings.id,
+      set: { cancelNoticeHours: hours, updatedBy, updatedAt: new Date() },
+    });
+}
+
 export async function getBookingRequestsBccExtra(): Promise<string> {
   const [row] = await db
     .select({ v: appSettings.bookingRequestsBccExtra })

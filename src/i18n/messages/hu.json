@@ -327,7 +327,8 @@
       "weaponTooLong": "Néhány mező meghaladja a megengedett hosszt",
       "userWithPhoneExists": "Ezzel a telefonszámmal már létezik felhasználó",
       "unexpected": "Váratlan hiba történt. Próbálja újra."
-    }
+    },
+    "cancelOngoingHint": "folyamatban lévő foglalás — a felhasznált idő rögzítésre kerül, a fennmaradó idősáv azonnal felszabadul"
   },
   "openingHours": {
     "title": "Nyitvatartás",
@@ -366,7 +367,12 @@
     "saved": "Zárás létrehozva",
     "editTitle": "Zárás szerkesztése",
     "timeFromOptional": "Ettől (opcionális)",
-    "timeToOptional": "Eddig (opcionális)"
+    "timeToOptional": "Eddig (opcionális)",
+    "conflictTitle": "Figyelem — ütközés meglévő foglalásokkal",
+    "conflictBody": "A kiválasztott zárási időszakban {count} aktív foglalás található. Ha megerősíti a zárást, az alábbi foglalások AZONNAL TÖRLÉSRE kerülnek, minden tag e-mailt kap a lemondásról, és a felszabadult idősávok nem állíthatók vissza automatikusan. Ez a művelet visszafordíthatatlan.",
+    "conflictAck": "Megértettem, hogy a megerősítéssel az összes felsorolt foglalás törlésre kerül, és a tagok e-mailben értesítést kapnak.",
+    "confirmCancelAll": "Zárás és {count} foglalás törlése",
+    "savedWithCancellations": "Zárás létrehozva — {count} foglalás törölve, a tagok értesítve."
   },
   "booking": {
     "title": "Új foglalás",
@@ -421,7 +427,8 @@
     "groupTooLarge": "A megengedett létszám túllépve",
     "wholeRangeNotAllowed": "Ez a lőtér nem bérelhető ki teljes egészében",
     "arealBooked": "Ebben az időben a teljes létesítmény ki van bérelve",
-    "rangeNotFound": "A lőtér nem érhető el"
+    "rangeNotFound": "A lőtér nem érhető el",
+    "cancelNoticeHint": "A foglalás legkésőbb a kezdés előtt {hours} órával mondható le."
   },
   "checkIn": {
     "title": "Érkezés megerősítése",
@@ -667,7 +674,11 @@
     "autoNoshowTitle": "Automatikus meg nem jelenés",
     "autoNoshowDescription": "Ha be van kapcsolva, az érkezés-megerősítés nélküli foglalás (vendég vagy admin által) a kezdés után 15 perccel automatikusan meg nem jelenésként lesz megjelölve. Ha ki van kapcsolva, a foglalás a végén befejezettként zárul.",
     "autoNoshowOn": "Automatikus meg nem jelenés bekapcsolva",
-    "autoNoshowOff": "Automatikus meg nem jelenés kikapcsolva"
+    "autoNoshowOff": "Automatikus meg nem jelenés kikapcsolva",
+    "cancelNoticeTitle": "Foglalás lemondása a felhasználó által — határidő",
+    "cancelNoticeDescription": "Legalább ennyi órával a foglalás kezdete előtt mondhatja le a foglalást maga a felhasználó (tag). A határidő letelte után már csak az adminisztrátor mondhatja le.",
+    "cancelNoticeUnit": "órával a foglalás kezdete előtt",
+    "cancelNoticeZeroHint": "0 = a tag a kezdésig bármikor lemondhatja."
   },
   "rateLimits": {
     "title": "Rate Limits",

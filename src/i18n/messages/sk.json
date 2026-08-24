@@ -327,7 +327,8 @@
       "weaponTooLong": "Niektoré pole prekračuje maximálnu dĺžku",
       "userWithPhoneExists": "Používateľ s týmto telefónnym číslom už existuje",
       "unexpected": "Nastala neočakávaná chyba. Skúste to znova."
-    }
+    },
+    "cancelOngoingHint": "prebiehajúca rezervácia — využitý čas sa zaznamená a zvyšok termínu sa okamžite uvoľní"
   },
   "openingHours": {
     "title": "Otváracie hodiny",
@@ -366,7 +367,12 @@
     "saved": "Uzávierka bola vytvorená",
     "editTitle": "Upraviť uzávierku",
     "timeFromOptional": "Od (voliteľné)",
-    "timeToOptional": "Do (voliteľné)"
+    "timeToOptional": "Do (voliteľné)",
+    "conflictTitle": "Pozor — kolízia s existujúcimi rezerváciami",
+    "conflictBody": "Vo zvolenom období uzavretia existuje {count} aktívnych rezervácií. Ak uzavretie potvrdíte, VŠETKY nižšie uvedené rezervácie budú OKAMŽITE ZRUŠENÉ, každý člen dostane e-mail o zrušení a uvoľnené termíny sa nedajú automaticky obnoviť. Táto akcia je nevratná.",
+    "conflictAck": "Rozumiem, že potvrdením budú všetky uvedené rezervácie zrušené a členovia budú o zrušení informovaní e-mailom.",
+    "confirmCancelAll": "Uzavrieť a zrušiť {count} rezervácií",
+    "savedWithCancellations": "Uzavretie vytvorené — {count} rezervácií bolo zrušených a členovia boli informovaní."
   },
   "booking": {
     "title": "Nová rezervácia",
@@ -421,7 +427,8 @@
     "groupTooLarge": "Prekročený maximálny počet osôb",
     "wholeRangeNotAllowed": "Túto strelnicu nie je možné prenajať celú",
     "arealBooked": "V tomto čase je prenajatý celý areál",
-    "rangeNotFound": "Strelnica nie je dostupná"
+    "rangeNotFound": "Strelnica nie je dostupná",
+    "cancelNoticeHint": "Rezerváciu je možné zrušiť najneskôr {hours} h pred jej začiatkom."
   },
   "checkIn": {
     "title": "Potvrdenie príchodu",
@@ -667,7 +674,11 @@
     "autoNoshowTitle": "Automatická neúčasť",
     "autoNoshowDescription": "Keď je zapnutá, rezervácia bez potvrdenia príchodu (hosťom alebo administrátorom) sa 15 minút po začiatku automaticky označí ako neúčasť. Keď je vypnutá, rezervácia sa po skončení označí ako dokončená.",
     "autoNoshowOn": "Automatická neúčasť zapnutá",
-    "autoNoshowOff": "Automatická neúčasť vypnutá"
+    "autoNoshowOff": "Automatická neúčasť vypnutá",
+    "cancelNoticeTitle": "Lehota na zrušenie rezervácie používateľom",
+    "cancelNoticeDescription": "Minimálny počet hodín pred začiatkom rezervácie, do ktorého môže rezerváciu zrušiť sám používateľ (člen). Po uplynutí tejto lehoty môže rezerváciu zrušiť už len administrátor.",
+    "cancelNoticeUnit": "hodín pred začiatkom rezervácie",
+    "cancelNoticeZeroHint": "0 = člen môže zrušiť kedykoľvek pred začiatkom."
   },
   "rateLimits": {
     "title": "Rate Limits",

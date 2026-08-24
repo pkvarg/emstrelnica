@@ -13,6 +13,8 @@ export const appSettings = pgTable(
     /** When false, un-confirmed bookings are NOT auto-marked as no-show;
      *  they simply auto-complete at end time. */
     autoNoshowEnabled: boolean("auto_noshow_enabled").notNull().default(true),
+    /** Minimum notice (hours before start) for a member to cancel. 0 = up to start. */
+    cancelNoticeHours: integer("cancel_notice_hours").notNull().default(2),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .defaultNow()
       .notNull(),

@@ -5,6 +5,7 @@ import { eq, desc, asc } from "drizzle-orm";
 import { getTranslations, getLocale } from "next-intl/server";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { getCancelNoticeHours } from "@/lib/settings";
 import { BookingsList } from "./bookings-list";
 
 export default async function MemberBookingsPage() {
@@ -33,6 +34,8 @@ export default async function MemberBookingsPage() {
     .where(eq(ranges.active, true))
     .orderBy(asc(ranges.sortOrder));
 
+  const cancelNoticeHours = await getCancelNoticeHours();
+
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -43,7 +46,11 @@ export default async function MemberBookingsPage() {
       </div>
 
       <div className="mt-4">
-        <BookingsList bookings={userBookings} ranges={allRanges} />
+        <BookingsList
+          bookings={userBookings}
+          ranges={allRanges}
+          cancelNoticeHours={cancelNoticeHours}
+        />
       </div>
     </div>
   );

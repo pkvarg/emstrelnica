@@ -27,6 +27,7 @@ import {
 import {
   getBookingRequestsExtraRecipients,
   isAutopilotEnabled,
+  getCancelNoticeHours,
 } from "@/lib/settings";
 import { fmtDate, fmtTime, bratislavaLocalToUtc } from "@/lib/format";
 
@@ -248,6 +249,16 @@ export async function cancelBooking(bookingId: string, reason?: string) {
   if (booking.startsAt <= new Date()) throw new Error("Cannot cancel past booking");
   if (!["requested", "approved"].includes(booking.status)) {
     throw new Error("Cannot cancel this booking");
+  }
+
+  // Cancellation notice: members must cancel at least N hours before start
+  // (admin-configurable; 0 disables the restriction).
+  const noticeHours = await getCancelNoticeHours();
+  if (
+    noticeHours > 0 &&
+    booking.startsAt.getTime() - Date.now() < noticeHours * 3_600_000
+  ) {
+    throw new Error("Cancellation notice period has passed");
   }
 
   const cancellationReason = reason?.trim().slice(0, 500) || null;

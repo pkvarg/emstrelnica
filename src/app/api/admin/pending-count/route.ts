@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { bookings, users, ranges } from "@/db/schema";
-import { eq, and, lte, gt, sql, asc } from "drizzle-orm";
+import { eq, and, lte, gt, sql, asc, desc } from "drizzle-orm";
 
 export async function GET() {
   const session = await auth();
@@ -12,7 +12,7 @@ export async function GET() {
 
   const now = new Date();
 
-  const [[row], checkinRows] = await Promise.all([
+  const [[row], checkinRows, [lastCancel]] = await Promise.all([
     db
       .select({
         count: sql<number>`count(*)::int`,
@@ -41,6 +41,22 @@ export async function GET() {
         ),
       )
       .orderBy(asc(bookings.startsAt)),
+    // Most recent member self-cancellation — surfaced so the admin notices
+    // freed slots without watching the bookings table.
+    db
+      .select({
+        cancelledAt: bookings.cancelledAt,
+        startsAt: bookings.startsAt,
+        memberName: sql<string>`${users.firstName} || ' ' || ${users.lastName}`,
+        rangeNameSk: ranges.nameSk,
+        rangeNameHu: ranges.nameHu,
+      })
+      .from(bookings)
+      .innerJoin(users, eq(bookings.userId, users.id))
+      .innerJoin(ranges, eq(bookings.rangeId, ranges.id))
+      .where(and(eq(bookings.status, "cancelled"), eq(bookings.cancelledBy, "member")))
+      .orderBy(desc(bookings.cancelledAt))
+      .limit(1),
   ]);
 
   return NextResponse.json({
@@ -59,5 +75,14 @@ export async function GET() {
         startsAt: r.startsAt.toISOString(),
       })),
     },
+    memberCancel: lastCancel?.cancelledAt
+      ? {
+          latest: lastCancel.cancelledAt.toISOString(),
+          member: lastCancel.memberName,
+          rangeSk: lastCancel.rangeNameSk,
+          rangeHu: lastCancel.rangeNameHu,
+          startsAt: lastCancel.startsAt.toISOString(),
+        }
+      : null,
   });
 }

@@ -44,9 +44,11 @@ const statusColors: Record<string, string> = {
 export function BookingsList({
   bookings,
   ranges,
+  cancelNoticeHours,
 }: {
   bookings: Booking[];
   ranges: Range[];
+  cancelNoticeHours: number;
 }) {
   const t = useTranslations("booking");
   const [cancellingId, setCancellingId] = useState<string | null>(null);
@@ -57,6 +59,9 @@ export function BookingsList({
   if (bookings.length === 0) {
     return <p className="text-sm text-zinc-500">{t("noBookings")}</p>;
   }
+
+  const noticeHint =
+    cancelNoticeHours > 0 ? t("cancelNoticeHint", { hours: cancelNoticeHours }) : null;
 
   async function handleCancel(id: string) {
     setSubmitting(true);
@@ -70,6 +75,8 @@ export function BookingsList({
   }
 
   return (
+    <>
+    {noticeHint && <p className="mb-2 text-xs text-zinc-500">{noticeHint}</p>}
     <Table>
       <TableHeader>
         <TableRow>
@@ -89,6 +96,7 @@ export function BookingsList({
           );
           const canCancel =
             ["requested", "approved"].includes(b.status) &&
+            b.startsAt.getTime() - Date.now() >= cancelNoticeHours * 3_600_000 &&
             b.startsAt > new Date();
           const isCancelling = cancellingId === b.id;
 
@@ -184,5 +192,6 @@ export function BookingsList({
         })}
       </TableBody>
     </Table>
+    </>
   );
 }

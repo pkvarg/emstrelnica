@@ -1,7 +1,11 @@
 "use client";
 
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { fmtDate, fmtTime } from "@/lib/format";
+import { cancelBookingAdmin } from "../actions";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -55,9 +59,23 @@ export function AdminBookingsTable({
   const t = useTranslations("booking");
   const tAdmin = useTranslations("admin");
   const rangeMap = Object.fromEntries(ranges.map((r) => [r.id, r.nameSk]));
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [reason, setReason] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   if (bookings.length === 0) {
     return <p className="text-sm text-zinc-500">-</p>;
+  }
+
+  async function handleCancel(id: string) {
+    setSubmitting(true);
+    try {
+      await cancelBookingAdmin(id, reason);
+      setCancellingId(null);
+      setReason("");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -71,11 +89,13 @@ export function AdminBookingsTable({
           <TableHead>{tAdmin("columns.guests")}</TableHead>
           <TableHead>{tAdmin("columns.status")}</TableHead>
           <TableHead>{tAdmin("columns.note")}</TableHead>
+          <TableHead></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {bookings.map((b) => (
-          <TableRow key={b.id}>
+          <React.Fragment key={b.id}>
+          <TableRow>
             <TableCell>
               {b.userName} {b.userLastName}
               <br />
@@ -130,7 +150,86 @@ export function AdminBookingsTable({
               )}
               {!b.userNote && !(b.status === "cancelled" && b.cancellationReason) && "-"}
             </TableCell>
+            <TableCell>
+              {["requested", "approved", "checked_in"].includes(b.status) &&
+                b.endsAt > new Date() &&
+                cancellingId !== b.id && (
+                  <Button
+                    variant="destructive"
+                    size="xs"
+                    onClick={() => {
+                      setCancellingId(b.id);
+                      setReason("");
+                    }}
+                  >
+                    {t("cancel")}
+                  </Button>
+                )}
+            </TableCell>
           </TableRow>
+          {cancellingId === b.id && (
+            <TableRow>
+              <TableCell colSpan={8} className="bg-zinc-900/60">
+                <div className="flex flex-col gap-3 p-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-amber-400">
+                      {t("cancelConfirm")}
+                      {b.startsAt <= new Date() && (
+                        <span className="ml-2 text-xs font-normal text-zinc-400">
+                          ({tAdmin("cancelOngoingHint")})
+                        </span>
+                      )}
+                    </p>
+                    <button
+                      onClick={() => {
+                        setCancellingId(null);
+                        setReason("");
+                      }}
+                      className="text-zinc-500 hover:text-zinc-300"
+                      aria-label="close"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-zinc-400">
+                      {t("cancelReasonLabel")}
+                    </label>
+                    <textarea
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                      placeholder={t("cancelReasonPlaceholder")}
+                      maxLength={500}
+                      rows={3}
+                      className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      disabled={submitting}
+                      onClick={() => handleCancel(b.id)}
+                    >
+                      {submitting ? "..." : t("confirmCancel")}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={submitting}
+                      onClick={() => {
+                        setCancellingId(null);
+                        setReason("");
+                      }}
+                    >
+                      {t("keepBooking")}
+                    </Button>
+                  </div>
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
+          </React.Fragment>
         ))}
       </TableBody>
     </Table>

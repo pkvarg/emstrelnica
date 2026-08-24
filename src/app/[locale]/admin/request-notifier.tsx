@@ -3,12 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
-import { Bell, UserCheck, X } from "lucide-react";
+import { Bell, CalendarX, UserCheck, X } from "lucide-react";
 
 const POLL_MS = 20_000;
 const TOAST_MS = 12_000;
 
 interface CheckinItem {
+  member: string;
+  rangeSk: string;
+  rangeHu: string;
+  startsAt: string;
+}
+
+interface MemberCancel {
+  latest: string;
   member: string;
   rangeSk: string;
   rangeHu: string;
@@ -23,6 +31,7 @@ interface AttentionPayload {
     latest: string | null;
     items: CheckinItem[];
   };
+  memberCancel?: MemberCancel | null;
 }
 
 const texts = {
@@ -39,6 +48,12 @@ const texts = {
     checkinOpen: "Otvoriť prehľad",
     pill: (n: number) =>
       n === 1 ? "1 nepotvrdený príchod" : `${n} nepotvrdené príchody`,
+    cancelTitle: "Rezervácia zrušená členom",
+    cancelBody: (c: MemberCancel) => {
+      const d = new Date(c.startsAt);
+      return `${c.member} — ${c.rangeSk}, ${d.toLocaleDateString("sk-SK")} ${d.toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" })}`;
+    },
+    cancelOpen: "Otvoriť rezervácie",
   },
   hu: {
     requestTitle: "Új foglalási kérelem",
@@ -51,6 +66,12 @@ const texts = {
         : `${n} foglalás vár érkezés-megerősítésre`,
     checkinOpen: "Áttekintés megnyitása",
     pill: (n: number) => `${n} meg nem erősített érkezés`,
+    cancelTitle: "A tag lemondta a foglalást",
+    cancelBody: (c: MemberCancel) => {
+      const d = new Date(c.startsAt);
+      return `${c.member} — ${c.rangeHu}, ${d.toLocaleDateString("hu-HU")} ${d.toLocaleTimeString("hu-HU", { hour: "2-digit", minute: "2-digit" })}`;
+    },
+    cancelOpen: "Foglalások megnyitása",
   },
 };
 
@@ -99,9 +120,11 @@ export function RequestNotifier() {
     count: 0,
     items: [],
   });
-  const [toast, setToast] = useState<null | "request" | "checkin">(null);
+  const [toast, setToast] = useState<null | "request" | "checkin" | "cancel">(null);
+  const [lastCancel, setLastCancel] = useState<MemberCancel | null>(null);
   const latestRequestRef = useRef<string | null>(null);
   const latestCheckinRef = useRef<string | null>(null);
+  const latestCancelRef = useRef<string | null>(null);
   const initializedRef = useRef(false);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -120,7 +143,11 @@ export function RequestNotifier() {
   useEffect(() => {
     let cancelled = false;
 
-    const notify = (kind: "request" | "checkin", title: string, body: string) => {
+    const notify = (
+      kind: "request" | "checkin" | "cancel",
+      title: string,
+      body: string,
+    ) => {
       playChime();
       setToast(kind);
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
@@ -149,12 +176,21 @@ export function RequestNotifier() {
           nextCheckins.latest !== null &&
           (latestCheckinRef.current === null ||
             nextCheckins.latest > latestCheckinRef.current);
+        const nextCancel = data.memberCancel ?? null;
+        const newCancel =
+          initializedRef.current &&
+          nextCancel !== null &&
+          latestCancelRef.current !== null &&
+          nextCancel.latest > latestCancelRef.current;
 
         if (nextLatest !== null) latestRequestRef.current = nextLatest;
         if (nextCheckins.latest !== null) latestCheckinRef.current = nextCheckins.latest;
+        if (nextCancel !== null) latestCancelRef.current = nextCancel.latest;
+        else if (!initializedRef.current) latestCancelRef.current = "";
         initializedRef.current = true;
         setPendingCount(nextCount);
         setCheckins({ count: nextCheckins.count, items: nextCheckins.items });
+        if (nextCancel !== null) setLastCancel(nextCancel);
 
         // Check-in events outrank request events when both land in one poll.
         if (newCheckin && nextCheckins.count > 0) {
@@ -165,6 +201,8 @@ export function RequestNotifier() {
           );
         } else if (newRequest && nextCount > 0) {
           notify("request", t.requestTitle, t.requestBody(nextCount));
+        } else if (newCancel && nextCancel !== null) {
+          notify("cancel", t.cancelTitle, t.cancelBody(nextCancel));
         }
       } catch {
         // transient network error — next poll retries
@@ -206,7 +244,14 @@ export function RequestNotifier() {
             body: t.checkinBody(checkins.items[0], checkins.count),
             cta: t.checkinOpen,
           }
-        : null;
+        : toast === "cancel" && lastCancel
+          ? {
+              icon: <CalendarX size={16} />,
+              title: t.cancelTitle,
+              body: t.cancelBody(lastCancel),
+              cta: t.cancelOpen,
+            }
+          : null;
 
   return (
     <>
