@@ -1,0 +1,3 @@
+# Demo site with a fictional shooting range – not for search engines.
+User-agent: *
+Disallow: /

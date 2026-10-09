@@ -17,6 +17,7 @@ import { auth } from "@/lib/auth";
 import { formatEur, type RangePricing } from "@/lib/pricing";
 import { AvailabilityCalendar } from "./availability-calendar";
 import { OpeningHoursPanel } from "./opening-hours-panel";
+import { CookieSettingsButton } from "./cookie-settings-button";
 import { OpenNowBadge } from "./open-now-badge";
 
 export const dynamic = "force-dynamic";
@@ -305,6 +306,7 @@ export default async function HomePage({
               <Link href={`/${locale}/kontakt`} className="hover:text-brand transition-colors">
                 {t("common.contact")}
               </Link>
+              <CookieSettingsButton className="hover:text-brand transition-colors" />
             </div>
           </div>
           <div className="mt-8 flex flex-col items-center gap-2 border-t border-zinc-800 pt-6 text-center text-xs text-zinc-600 sm:flex-row sm:justify-between">

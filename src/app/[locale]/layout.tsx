@@ -6,6 +6,7 @@ import { Navbar } from "./navbar";
 import { SessionProvider } from "next-auth/react";
 import { CookieBanner } from "./cookie-banner";
 import { ConditionalUmami } from "./conditional-umami";
+import { DemoBanner } from "./demo-banner";
 
 export default async function LocaleLayout({
   children,
@@ -26,6 +27,7 @@ export default async function LocaleLayout({
       <SessionProvider>
         <Navbar />
         {children}
+        <DemoBanner locale={locale} />
         <CookieBanner />
         <ConditionalUmami />
       </SessionProvider>

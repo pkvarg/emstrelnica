@@ -16,6 +16,8 @@ const bebasNeue = Bebas_Neue({
 export const metadata: Metadata = {
   title: "Strelnica",
   description: "Rezervačný systém strelnice",
+  // Demo site with a fictional range: keep it out of search results.
+  robots: { index: false, follow: false },
 };
 
 export default async function RootLayout({
