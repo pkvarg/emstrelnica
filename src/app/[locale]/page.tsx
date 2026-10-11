@@ -22,8 +22,8 @@ import { OpenNowBadge } from "./open-now-badge";
 
 export const dynamic = "force-dynamic";
 
-const HERO_IMAGE =
-  "https://images.unsplash.com/photo-1595590424283-b8f17842773f?q=80&w=2070&auto=format&fit=crop";
+// Served from /public (photo from Unsplash, free licence) so visitors don't connect to Unsplash.
+const HERO_IMAGE = "/hero-range.webp";
 
 const RESOURCE_ICONS: Record<string, LucideIcon> = {
   r50: Target,
