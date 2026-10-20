@@ -2,9 +2,9 @@ import crypto from "crypto";
 
 /**
  * Short-lived HMAC-signed ticket that proves the user has already passed the
- * password check. Embeds the plaintext password so `submitAdminOtp` can
- * re-invoke `signIn("credentials", { login, password })` after verifying the
- * email OTP, without re-prompting the user.
+ * password check and links to their pending email OTP. After the OTP is
+ * verified, `submitAdminOtp` signs in with a server-side login proof
+ * (lib/login-proof.ts), so the ticket never carries the password.
  *
  * Stored in an httpOnly cookie (`admin_login_ticket`) so the raw JSON never
  * reaches the browser JS. The HMAC is keyed with AUTH_SECRET so a stolen
@@ -15,8 +15,6 @@ export const ADMIN_LOGIN_TICKET_TTL_SECONDS = 10 * 60;
 
 interface TicketPayload {
   userId: string;
-  login: string;
-  password: string;
   /** Hash of the verification_codes.tokenHash so we can match to the DB row. */
   verificationTokenHash: string;
   exp: number;
@@ -47,8 +45,10 @@ function b64urlDecode(input: string): Buffer {
 export function signAdminLoginTicket(
   payload: Omit<TicketPayload, "exp">,
 ): string {
+  // Only these fields are signed into the cookie; nothing else a caller passes ends up in it.
   const full: TicketPayload = {
-    ...payload,
+    userId: payload.userId,
+    verificationTokenHash: payload.verificationTokenHash,
     exp: Math.floor(Date.now() / 1000) + ADMIN_LOGIN_TICKET_TTL_SECONDS,
   };
   const body = b64urlEncode(JSON.stringify(full));
@@ -80,8 +80,6 @@ export function verifyAdminLoginTicket(
     if (!parsed.exp || parsed.exp < Math.floor(Date.now() / 1000)) return null;
     if (
       typeof parsed.userId !== "string" ||
-      typeof parsed.login !== "string" ||
-      typeof parsed.password !== "string" ||
       typeof parsed.verificationTokenHash !== "string"
     ) {
       return null;

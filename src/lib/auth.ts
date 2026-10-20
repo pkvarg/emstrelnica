@@ -4,6 +4,8 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq, or } from "drizzle-orm";
 import argon2 from "argon2";
+import { verifyLoginProof } from "./login-proof";
+import { rateLimit } from "./rate-limit";
 
 declare module "next-auth" {
   interface User {
@@ -66,6 +68,21 @@ export async function validateAdminCredentials(
   };
 }
 
+/** Loads a user for a sign-in that was already verified elsewhere (see lib/login-proof.ts). */
+async function signInUserById(userId: string) {
+  const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  if (!user) return null;
+  if (user.status !== "active" && user.status !== "pending_verification") return null;
+  return {
+    id: user.id,
+    email: user.email,
+    name: `${user.firstName} ${user.lastName}`,
+    role: user.role as "admin" | "member",
+    status: user.status,
+    locale: user.locale,
+  };
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
@@ -74,12 +91,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        // Server actions that already finished every step (admin OTP, trusted device) pass a proof.
+        const proof = (credentials as Record<string, unknown> | undefined)?.proof as string | undefined;
+        if (proof) {
+          const userId = verifyLoginProof(proof);
+          return userId ? await signInUserById(userId) : null;
+        }
+
         const login = credentials?.login as string | undefined;
         const password = credentials?.password as string | undefined;
-
         if (!login || !password) return null;
 
-        return await validateAdminCredentials(login, password);
+        // This endpoint is also reachable directly (/api/auth/callback/credentials), outside the
+        // login form's own rate limit.
+        if (!rateLimit(`authorize:${login.trim().toLowerCase()}`, 10, 15 * 60 * 1000).allowed) {
+          return null;
+        }
+
+        const user = await validateAdminCredentials(login, password);
+        // Admins never get a session from the password alone: they finish through the email OTP or
+        // a trusted device, which sign in with a proof instead.
+        if (!user || user.role === "admin") return null;
+        return user;
       },
     }),
   ],

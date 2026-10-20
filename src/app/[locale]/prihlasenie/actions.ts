@@ -18,6 +18,7 @@ import {
   TRUSTED_DEVICE_COOKIE,
   verifyTrustedDevice,
 } from "@/lib/trusted-device";
+import { issueLoginProof } from "@/lib/login-proof";
 import {
   ADMIN_LOGIN_TICKET_COOKIE,
   ADMIN_LOGIN_TICKET_TTL_SECONDS,
@@ -72,7 +73,11 @@ export async function loginAction(
         entityId: creds.id,
       });
 
-      return await completeSignInAndRedirect(login, password, creds.id, creds.role);
+      return await completeSignInAndRedirect(
+        { proof: issueLoginProof(creds.id) },
+        creds.id,
+        creds.role,
+      );
     }
 
     // Otherwise issue an email OTP and redirect to /admin-otp.
@@ -89,12 +94,10 @@ export async function loginAction(
       expiresAt,
     });
 
-    // Ticket binds the already-verified password to the pending OTP row so
-    // the OTP page can later call signIn without re-prompting.
+    // Ticket links the already-verified password check to the pending OTP row;
+    // after the OTP the sign-in finishes with a login proof, not the password.
     const ticket = signAdminLoginTicket({
       userId: creds.id,
-      login,
-      password,
       verificationTokenHash: tokenHash,
     });
 
@@ -129,8 +132,7 @@ export async function loginAction(
   const locale = await getLocale();
   const callbackUrl = sanitizeCallbackUrl(callbackUrlRaw, locale);
   return await completeSignInAndRedirect(
-    login,
-    password,
+    { login, password },
     creds.id,
     creds.role,
     callbackUrl,
@@ -138,16 +140,14 @@ export async function loginAction(
 }
 
 async function completeSignInAndRedirect(
-  login: string,
-  password: string,
+  credentials: { login: string; password: string } | { proof: string },
   userId: string,
   role: "admin" | "member",
   callbackUrl?: string | null,
 ): Promise<{ error?: string }> {
   try {
     await signIn("credentials", {
-      login,
-      password,
+      ...credentials,
       redirect: false,
     });
 

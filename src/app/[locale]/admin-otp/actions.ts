@@ -6,6 +6,7 @@ import { AuthError } from "next-auth";
 import { eq } from "drizzle-orm";
 import { getLocale } from "next-intl/server";
 import { signIn } from "@/lib/auth";
+import { issueLoginProof } from "@/lib/login-proof";
 import { db } from "@/db";
 import { users, verificationCodes } from "@/db/schema";
 import { hashToken } from "@/lib/tokens";
@@ -116,14 +117,13 @@ export async function submitAdminOtp(
 
   try {
     await signIn("credentials", {
-      login: ticket.login,
-      password: ticket.password,
+      proof: issueLoginProof(ticket.userId),
       redirect: false,
     });
   } catch (error) {
     if (error instanceof AuthError) {
-      // Shouldn't happen — password was valid 10 minutes ago. Treat as
-      // generic failure and make the user start over.
+      // Shouldn't happen — the proof was issued a moment ago. Possible if the
+      // account was disabled meanwhile; make the user start over.
       jar.delete(ADMIN_LOGIN_TICKET_COOKIE);
       redirect(`/${locale}/prihlasenie`);
     }
