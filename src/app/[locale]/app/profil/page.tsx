@@ -57,44 +57,44 @@ export default function ProfilePage() {
       <form action={formAction} className="mt-6 space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>{t("firstName")}</Label>
-            <Input name="firstName" defaultValue={user.firstName ?? ""} />
+            <Label htmlFor="profile-firstName">{t("firstName")}</Label>
+            <Input id="profile-firstName" name="firstName" defaultValue={user.firstName ?? ""} />
           </div>
           <div className="space-y-2">
-            <Label>{t("lastName")}</Label>
-            <Input name="lastName" defaultValue={user.lastName ?? ""} />
+            <Label htmlFor="profile-lastName">{t("lastName")}</Label>
+            <Input id="profile-lastName" name="lastName" defaultValue={user.lastName ?? ""} />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label>{t("email")}</Label>
-          <Input value={user.email ?? ""} disabled />
+          <Label htmlFor="profile-email">{t("email")}</Label>
+          <Input id="profile-email" value={user.email ?? ""} disabled />
         </div>
 
         <PhoneChange currentPhone={user.phoneE164 ?? ""} />
 
         <div className="space-y-2">
-          <Label>{t("birthDate")}</Label>
-          <Input name="birthDate" type="date" defaultValue={user.birthDate ?? ""} />
+          <Label htmlFor="profile-birthDate">{t("birthDate")}</Label>
+          <Input id="profile-birthDate" name="birthDate" type="date" defaultValue={user.birthDate ?? ""} />
         </div>
 
         <h2 className="pt-4 text-lg font-semibold">{t("address")}</h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>{t("street")}</Label>
-            <Input name="addressStreet" defaultValue={user.addressStreet ?? ""} />
+            <Label htmlFor="profile-addressStreet">{t("street")}</Label>
+            <Input id="profile-addressStreet" name="addressStreet" defaultValue={user.addressStreet ?? ""} />
           </div>
           <div className="space-y-2">
-            <Label>{t("city")}</Label>
-            <Input name="addressCity" defaultValue={user.addressCity ?? ""} />
+            <Label htmlFor="profile-addressCity">{t("city")}</Label>
+            <Input id="profile-addressCity" name="addressCity" defaultValue={user.addressCity ?? ""} />
           </div>
           <div className="space-y-2">
-            <Label>{t("zip")}</Label>
-            <Input name="addressZip" defaultValue={user.addressZip ?? ""} />
+            <Label htmlFor="profile-addressZip">{t("zip")}</Label>
+            <Input id="profile-addressZip" name="addressZip" defaultValue={user.addressZip ?? ""} />
           </div>
           <div className="space-y-2">
-            <Label>{t("country")}</Label>
-            <Input name="addressCountry" defaultValue={user.addressCountry ?? ""} />
+            <Label htmlFor="profile-addressCountry">{t("country")}</Label>
+            <Input id="profile-addressCountry" name="addressCountry" defaultValue={user.addressCountry ?? ""} />
           </div>
         </div>
 
@@ -144,7 +144,7 @@ export default function ProfilePage() {
           </Button>
           <a
             href="/api/profile/export"
-            className="inline-flex h-8 items-center justify-center rounded-lg border border-border bg-background px-2.5 text-sm font-medium hover:bg-muted"
+            className="inline-flex h-8 items-center justify-center rounded-lg border border-border bg-background px-2.5 text-sm font-medium hover:bg-muted pointer-coarse:h-11"
           >
             {t("exportData")}
           </a>

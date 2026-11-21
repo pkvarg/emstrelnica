@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#09090b",
-  colorScheme: "dark",
+  colorScheme: "dark light",
 };
 
 export default async function RootLayout({
@@ -39,6 +39,14 @@ export default async function RootLayout({
       className={`${dmSans.variable} ${bebasNeue.variable} h-full dark`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'try{if(localStorage.getItem("theme")==="light"){var c=document.documentElement.classList;c.remove("dark");c.add("light")}}catch(e){}',
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col font-[family-name:var(--font-dm-sans)] bg-zinc-950 text-zinc-100 antialiased">
         {children}
       </body>

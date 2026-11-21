@@ -28,7 +28,7 @@ export default async function LocaleLayout({
       <SessionProvider>
         <a
           href="#content"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[1000] focus:rounded-sm focus:bg-brand focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-zinc-950"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[1000] focus:rounded-sm focus:bg-brand focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-black"
         >
           {t("skipToContent")}
         </a>

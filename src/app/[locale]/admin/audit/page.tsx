@@ -81,7 +81,7 @@ export default async function AuditLogPage({
         <input name="from" type="date" aria-label={tCommon("dateFrom")} className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.from ?? ""} />
         <input name="to" type="date" aria-label={tCommon("dateTo")} className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.to ?? ""} />
 
-        <button type="submit" className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm text-white">
+        <button type="submit" className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm text-zinc-50">
           {tCommon("filter")}
         </button>
       </form>

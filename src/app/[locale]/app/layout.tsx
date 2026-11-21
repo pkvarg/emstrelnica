@@ -26,7 +26,7 @@ export default async function AppLayout({
   const tRole = await getTranslations("admin.role");
 
   return (
-    <div className="flex min-h-full">
+    <div className="relative flex min-h-full">
       <AppNav
         user={session.user}
         labels={{

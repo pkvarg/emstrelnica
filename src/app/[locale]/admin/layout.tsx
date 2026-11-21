@@ -26,7 +26,7 @@ export default async function AdminLayout({
   const t = await getTranslations("common");
 
   return (
-    <div className="flex min-h-full">
+    <div className="relative flex min-h-full">
       <AdminNav
         user={session.user}
         labels={{

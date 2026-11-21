@@ -63,13 +63,13 @@ export function PhoneChange({ currentPhone }: Props) {
   if (step === "view") {
     return (
       <div className="space-y-2">
-        <Label>{t("phone")}</Label>
+        <Label htmlFor="profile-phone">{t("phone")}</Label>
         <div className="flex items-center gap-2">
-          <Input value={currentPhone} disabled className="flex-1" />
+          <Input id="profile-phone" value={currentPhone} disabled className="flex-1" />
           <Button
             type="button"
             onClick={() => setStep("enter")}
-            className="bg-amber-600 text-zinc-950 hover:bg-amber-500"
+            className="bg-amber-600 text-black hover:bg-amber-500"
           >
             {t("phoneChangeButton")}
           </Button>
@@ -103,7 +103,7 @@ export function PhoneChange({ currentPhone }: Props) {
             <Button
               type="submit"
               disabled={reqPending}
-              className="bg-amber-600 text-zinc-950 hover:bg-amber-500"
+              className="bg-amber-600 text-black hover:bg-amber-500"
             >
               {reqPending ? "…" : t("phoneSendCode")}
             </Button>
@@ -133,9 +133,9 @@ export function PhoneChange({ currentPhone }: Props) {
 
   return (
     <div className="space-y-2">
-      <Label>{t("phone")}</Label>
+      <Label htmlFor="profile-phone">{t("phone")}</Label>
       <div className="flex items-center gap-2">
-        <Input value={newPhone} disabled className="flex-1" />
+        <Input id="profile-phone" value={newPhone} disabled className="flex-1" />
         <span className="text-sm text-emerald-400">✓ {t("phoneVerifiedBadge")}</span>
       </div>
     </div>
@@ -186,7 +186,7 @@ function VerifyStep({
           <Button
             type="submit"
             disabled={pending}
-            className="bg-amber-600 text-zinc-950 hover:bg-amber-500"
+            className="bg-amber-600 text-black hover:bg-amber-500"
           >
             {pending ? "…" : tCommon("confirm")}
           </Button>

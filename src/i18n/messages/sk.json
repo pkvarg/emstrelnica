@@ -3,6 +3,8 @@
     "appName": "Strelnica",
     "home": "Domov",
     "menu": "Menu",
+    "lightMode": "Svetlý režim",
+    "darkMode": "Tmavý režim",
     "edit": "Upraviť",
     "range": "Strelnica",
     "status": "Stav",

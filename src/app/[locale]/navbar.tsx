@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { Bell, Menu, X } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 function CrosshairIcon() {
   return (
@@ -131,10 +132,11 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           {session?.user?.role === "admin" && <PendingBadge locale={locale} />}
           <LanguageSwitcher className="hidden md:flex" />
+          <ThemeToggle className="hidden md:inline-flex" />
           {session?.user ? (
             <button
               onClick={() => signOut({ callbackUrl: `/${locale}/prihlasenie` })}
-              className="inline-flex items-center gap-1.5 rounded-sm bg-brand px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-zinc-950 transition-colors hover:bg-brand/85 pointer-coarse:py-3.5"
+              className="inline-flex items-center gap-1.5 rounded-sm bg-brand px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-black transition-colors hover:bg-brand/85 pointer-coarse:py-3.5"
             >
               {t("logout")}
               <span aria-hidden="true">›</span>
@@ -142,7 +144,7 @@ export function Navbar() {
           ) : (
             <Link
               href={`/${locale}/prihlasenie`}
-              className="inline-flex items-center gap-1.5 rounded-sm bg-brand px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-zinc-950 transition-colors hover:bg-brand/85 pointer-coarse:py-3.5"
+              className="inline-flex items-center gap-1.5 rounded-sm bg-brand px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-black transition-colors hover:bg-brand/85 pointer-coarse:py-3.5"
             >
               {t("login")}
               <span aria-hidden="true">›</span>
@@ -174,8 +176,9 @@ export function Navbar() {
               </Link>
             ))}
           </div>
-          <div className="mt-2 border-t border-zinc-800/60 pt-3">
+          <div className="mt-2 flex items-center gap-3 border-t border-zinc-800/60 pt-3">
             <LanguageSwitcher className="inline-flex" />
+            <ThemeToggle />
           </div>
         </div>
       )}

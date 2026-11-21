@@ -197,7 +197,7 @@ export default async function HomePage({
   return (
     <div className="flex flex-col">
       <main className="flex flex-col">
-      <section className="relative overflow-hidden border-b border-zinc-800">
+      <section className="theme-dark relative overflow-hidden border-b border-zinc-800">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${HERO_IMAGE})` }}

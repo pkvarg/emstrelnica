@@ -25,7 +25,7 @@ export default function InvitationPage() {
           <p className="text-emerald-400">{t("success")}</p>
           <Link
             href={`/${locale}/prihlasenie`}
-            className="block w-full rounded-lg bg-amber-600 px-4 py-2.5 text-center text-sm font-semibold text-zinc-950 transition-colors hover:bg-amber-500"
+            className="block w-full rounded-lg bg-amber-600 px-4 py-2.5 text-center text-sm font-semibold text-black transition-colors hover:bg-amber-500"
           >
             {locale === "hu" ? "Bejelentkezés" : "Prihlásiť sa"}
           </Link>

@@ -13,7 +13,7 @@ export function DemoBanner({ locale }: { locale: string }) {
         href="https://pictusweb.sk"
         target="_blank"
         rel="noopener"
-        className="fixed inset-x-0 bottom-0 z-40 bg-amber-500 px-4 py-1.5 text-center text-xs font-semibold leading-snug text-zinc-950 shadow-[0_-4px_12px_rgba(0,0,0,0.35)] transition-colors hover:bg-amber-400 sm:py-2 sm:text-sm"
+        className="theme-dark fixed inset-x-0 bottom-0 z-40 bg-amber-500 px-4 py-1.5 text-center text-xs font-semibold leading-snug text-black shadow-[0_-4px_12px_rgba(0,0,0,0.35)] transition-colors hover:bg-amber-400 sm:py-2 sm:text-sm"
       >
         {TEXTS[locale] ?? TEXTS.sk}
       </a>

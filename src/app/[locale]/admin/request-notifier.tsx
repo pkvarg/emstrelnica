@@ -270,7 +270,7 @@ export function RequestNotifier() {
               <Link
                 href={`/${locale}/admin`}
                 onClick={() => setToast(null)}
-                className="mt-2 inline-block rounded-sm bg-brand px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-zinc-950 transition-colors hover:bg-brand/85"
+                className="mt-2 inline-block rounded-sm bg-brand px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-black transition-colors hover:bg-brand/85"
               >
                 {toastContent.cta}
               </Link>

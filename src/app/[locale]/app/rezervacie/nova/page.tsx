@@ -209,14 +209,14 @@ export default function NewBookingPage() {
       : null;
 
   return (
-    <div className="grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,28rem)_320px]">
       <div className="max-w-md">
         <h1 className="text-2xl font-bold">{t("title")}</h1>
 
         <form action={formAction} className="mt-6 space-y-4">
           <div className="space-y-2">
-            <Label>{t("range")}</Label>
-            <select
+            <Label htmlFor="booking-rangeId">{t("range")}</Label>
+            <select id="booking-rangeId"
               name="rangeId"
               className="w-full rounded-md border px-3 py-2 text-sm"
               value={rangeId}
@@ -246,8 +246,8 @@ export default function NewBookingPage() {
           </div>
 
           <div className="space-y-2">
-            <Label>{t("date")}</Label>
-            <Input
+            <Label htmlFor="booking-date">{t("date")}</Label>
+            <Input id="booking-date"
               name="date"
               type="date"
               value={date}
@@ -257,8 +257,8 @@ export default function NewBookingPage() {
           </div>
 
           <div className="space-y-2">
-            <Label>{t("startTime")}</Label>
-            <select
+            <Label htmlFor="booking-startTime">{t("startTime")}</Label>
+            <select id="booking-startTime"
               name="startTime"
               className="w-full rounded-md border px-3 py-2 text-sm"
               value={startTime}
@@ -278,8 +278,8 @@ export default function NewBookingPage() {
           </div>
 
           <div className="space-y-2">
-            <Label>{t("hours")}</Label>
-            <Input
+            <Label htmlFor="booking-hours">{t("hours")}</Label>
+            <Input id="booking-hours"
               name="hours"
               type="number"
               min="1"
@@ -294,8 +294,8 @@ export default function NewBookingPage() {
 
           {canPickUnits && !wholeRange && (
             <div className="space-y-2">
-              <Label>{t("boxCount")}</Label>
-              <Input
+              <Label htmlFor="booking-units">{t("boxCount")}</Label>
+              <Input id="booking-units"
                 name="units"
                 type="number"
                 min="1"
@@ -315,8 +315,8 @@ export default function NewBookingPage() {
 
           {selected && selected.maxGroupSize > 1 && unitsNeeded === 1 && (
             <div className="space-y-2">
-              <Label>{t("groupSize")}</Label>
-              <Input
+              <Label htmlFor="booking-groupSize">{t("groupSize")}</Label>
+              <Input id="booking-groupSize"
                 name="groupSize"
                 type="number"
                 min="1"
@@ -348,7 +348,7 @@ export default function NewBookingPage() {
                 type="checkbox"
                 checked={wholeRange}
                 onChange={(e) => setWholeRange(e.target.checked)}
-                className="mt-0.5"
+                className="mt-0.5 shrink-0 pointer-coarse:size-5"
               />
               <div>
                 <Label htmlFor="wholeRange">{t("wholeRange")}</Label>
@@ -360,13 +360,13 @@ export default function NewBookingPage() {
           )}
 
           <div className="space-y-2">
-            <Label>{t("guestCount")}</Label>
-            <Input name="guestCount" type="number" min="0" max="10" defaultValue="0" />
+            <Label htmlFor="booking-guestCount">{t("guestCount")}</Label>
+            <Input id="booking-guestCount" name="guestCount" type="number" min="0" max="10" defaultValue="0" />
           </div>
 
           <div className="space-y-2">
-            <Label>{t("note")}</Label>
-            <Input name="userNote" />
+            <Label htmlFor="booking-userNote">{t("note")}</Label>
+            <Input id="booking-userNote" name="userNote" />
           </div>
 
           <div className="rounded-md border bg-card p-3 text-sm">

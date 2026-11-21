@@ -1,8 +1,8 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { bookings } from "@/db/schema";
+import { bookings, ranges } from "@/db/schema";
 import { eq, and, sql } from "drizzle-orm";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 export default async function MemberStatsPage() {
   const session = await auth();
@@ -10,6 +10,22 @@ export default async function MemberStatsPage() {
   const tStats = await getTranslations("profile.stats");
 
   const userId = session!.user.id;
+  const locale = await getLocale();
+
+  const rangeRows = await db
+    .select({ id: ranges.id, nameSk: ranges.nameSk, nameHu: ranges.nameHu })
+    .from(ranges);
+  const rangeNames = new Map(
+    rangeRows.map((r) => [r.id, locale === "hu" ? r.nameHu : r.nameSk]),
+  );
+  const monthFormat = new Intl.DateTimeFormat(locale === "hu" ? "hu-HU" : "sk-SK", {
+    month: "long",
+    year: "numeric",
+  });
+  const monthLabel = (key: string) => {
+    const [year, month] = key.split("-").map(Number);
+    return monthFormat.format(new Date(year, month - 1, 1));
+  };
 
   const completedBookings = await db
     .select({
@@ -65,7 +81,7 @@ export default async function MemberStatsPage() {
         <div className="rounded-lg border p-4 text-center">
           {Object.entries(byRange).map(([range, count]) => (
             <p key={range} className="text-sm">
-              <span className="font-medium">{range}</span>: {count}x
+              <span className="font-medium">{rangeNames.get(range) ?? range}</span>: {count}×
             </p>
           ))}
           <p className="mt-1 text-sm text-zinc-500">{tStats("byRange")}</p>
@@ -76,7 +92,7 @@ export default async function MemberStatsPage() {
       <div className="mt-2 space-y-1">
         {sortedMonths.map(([month, data]) => (
           <div key={month} className="flex justify-between rounded border px-3 py-2 text-sm">
-            <span className="font-medium">{month}</span>
+            <span className="font-medium">{monthLabel(month)}</span>
             <span>
               {tStats("visitsAndHours", { visits: data.visits, hours: Math.round(data.minutes / 60 * 10) / 10 })}
             </span>

@@ -54,7 +54,7 @@ export default function LoginPage() {
 
           <Button
             type="submit"
-            className="w-full bg-amber-600 text-zinc-950 hover:bg-amber-500"
+            className="w-full bg-amber-600 text-black hover:bg-amber-500"
             disabled={isPending}
           >
             {isPending ? "…" : t("loginButton")}

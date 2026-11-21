@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   LayoutDashboard,
   CalendarCheck,
@@ -36,6 +37,7 @@ interface NavLink {
 
 export function AppNav({ user, labels, locale }: AppNavProps) {
   const pathname = usePathname();
+  const tCommon = useTranslations("common");
   const [pending, setPending] = useState<number>(0);
   const [open, setOpen] = useState(false);
 
@@ -96,7 +98,7 @@ export function AppNav({ user, labels, locale }: AppNavProps) {
               {labels.administration}
             </span>
             {pending > 0 && (
-              <span className="rounded-full bg-amber-600 px-2 py-0.5 text-xs font-bold text-zinc-950">
+              <span className="rounded-full bg-amber-600 px-2 py-0.5 text-xs font-bold text-black">
                 {pending}
               </span>
             )}
@@ -109,13 +111,13 @@ export function AppNav({ user, labels, locale }: AppNavProps) {
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors ${
+              className={`flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors pointer-coarse:py-3 ${
                 isActive
                   ? "bg-zinc-800 font-medium text-amber-500"
                   : "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
               }`}
             >
-              <Icon size={16} className={isActive ? "text-amber-500" : "text-zinc-500"} />
+              <Icon size={16} className={isActive ? "text-amber-500" : "text-zinc-500"} aria-hidden="true" />
               {link.label}
             </Link>
           );
@@ -129,11 +131,11 @@ export function AppNav({ user, labels, locale }: AppNavProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Menu"
+        aria-label={tCommon("menu")}
         aria-expanded={open}
-        className="fixed top-20 left-3 z-40 inline-flex h-10 w-10 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/90 text-zinc-200 shadow-lg backdrop-blur md:hidden"
+        className="absolute top-4 left-3 z-30 inline-flex h-11 w-11 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/90 text-zinc-200 shadow-lg backdrop-blur md:hidden"
       >
-        <Menu size={20} />
+        <Menu size={20} aria-hidden="true" />
       </button>
 
       <nav className="sticky top-0 hidden h-screen w-56 flex-col border-r border-zinc-800 bg-zinc-900 p-4 md:flex">
@@ -148,18 +150,18 @@ export function AppNav({ user, labels, locale }: AppNavProps) {
         />
       )}
       <nav
-        className={`fixed top-0 left-0 z-50 flex h-screen w-64 flex-col border-r border-zinc-800 bg-zinc-900 p-4 transition-transform duration-200 md:hidden ${
+        className={`fixed top-0 left-0 z-50 flex h-dvh w-64 flex-col overscroll-contain border-r border-zinc-800 bg-zinc-900 p-4 transition-transform duration-200 md:hidden ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
-        aria-hidden={!open}
+        inert={!open}
       >
         <button
           type="button"
           onClick={() => setOpen(false)}
-          aria-label="Close menu"
-          className="absolute top-3 right-3 inline-flex h-8 w-8 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+          aria-label={tCommon("close")}
+          className="absolute top-3 right-3 inline-flex h-11 w-11 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
         >
-          <X size={18} />
+          <X size={18} aria-hidden="true" />
         </button>
         {navBody}
       </nav>

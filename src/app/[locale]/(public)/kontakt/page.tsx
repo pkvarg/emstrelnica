@@ -261,7 +261,7 @@ export default function ContactPage() {
         <Button
           type="submit"
           disabled={isPending}
-          className="w-full bg-amber-600 text-zinc-950 hover:bg-amber-500"
+          className="w-full bg-amber-600 text-black hover:bg-amber-500"
         >
           {isPending ? "…" : l.send}
         </Button>

@@ -195,7 +195,7 @@ export function AdminNav({ user, labels, locale }: AdminNavProps) {
         onClick={() => setOpen(true)}
         aria-label={tCommon("menu")}
         aria-expanded={open}
-        className="fixed top-20 left-3 z-40 inline-flex h-11 w-11 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/90 text-zinc-200 shadow-lg backdrop-blur md:hidden"
+        className="absolute top-4 left-3 z-30 inline-flex h-11 w-11 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/90 text-zinc-200 shadow-lg backdrop-blur md:hidden"
       >
         <Menu size={20} aria-hidden="true" />
       </button>

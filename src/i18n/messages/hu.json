@@ -3,6 +3,8 @@
     "appName": "Lőtér",
     "home": "Főoldal",
     "menu": "Menü",
+    "lightMode": "Világos mód",
+    "darkMode": "Sötét mód",
     "edit": "Szerkesztés",
     "range": "Lőtér",
     "status": "Állapot",
