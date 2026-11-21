@@ -345,6 +345,7 @@
     "cancelOngoingHint": "prebiehajúca rezervácia — využitý čas sa zaznamená a zvyšok termínu sa okamžite uvoľní"
   },
   "openingHours": {
+    "confirmDelete": "Naozaj chcete odstrániť tieto otváracie hodiny?",
     "title": "Otváracie hodiny",
     "range": "Strelnica",
     "weekday": "Deň",
@@ -391,6 +392,7 @@
   "booking": {
     "title": "Nová rezervácia",
     "myBookings": "Moje rezervácie",
+    "upcomingTitle": "Najbližšie rezervácie",
     "range": "Strelnica",
     "date": "Dátum",
     "startTime": "Čas začiatku",

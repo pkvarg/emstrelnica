@@ -110,9 +110,9 @@ export function Navbar() {
   return (
     <nav aria-label={t("menu")} className="sticky top-0 z-50 border-b border-zinc-800/60 bg-zinc-950/95 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link href={`/${locale}`} className="flex items-center gap-2.5 group">
+        <Link href={`/${locale}`} className="group flex min-w-0 items-center gap-2 min-[400px]:gap-2.5">
           <CrosshairIcon />
-          <span className="font-[family-name:var(--font-bebas)] text-xl tracking-[0.2em] text-zinc-100 group-hover:text-brand transition-colors">
+          <span className="font-[family-name:var(--font-bebas)] text-base tracking-[0.12em] text-zinc-100 transition-colors group-hover:text-brand max-[339px]:hidden min-[400px]:text-xl min-[400px]:tracking-[0.2em]">
             {t("appName")}
           </span>
         </Link>
@@ -129,14 +129,14 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 min-[400px]:gap-3">
           {session?.user?.role === "admin" && <PendingBadge locale={locale} />}
           <LanguageSwitcher className="hidden md:flex" />
           <ThemeToggle className="hidden md:inline-flex" />
           {session?.user ? (
             <button
               onClick={() => signOut({ callbackUrl: `/${locale}/prihlasenie` })}
-              className="inline-flex items-center gap-1.5 rounded-sm bg-brand px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-black transition-colors hover:bg-brand/85 pointer-coarse:py-3.5"
+              className="inline-flex items-center gap-1.5 rounded-sm bg-brand px-3 py-2 text-xs font-bold uppercase tracking-[0.08em] text-black min-[400px]:px-4 min-[400px]:tracking-[0.12em] transition-colors hover:bg-brand/85 pointer-coarse:py-3.5"
             >
               {t("logout")}
               <span aria-hidden="true">›</span>
@@ -144,7 +144,7 @@ export function Navbar() {
           ) : (
             <Link
               href={`/${locale}/prihlasenie`}
-              className="inline-flex items-center gap-1.5 rounded-sm bg-brand px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-black transition-colors hover:bg-brand/85 pointer-coarse:py-3.5"
+              className="inline-flex items-center gap-1.5 rounded-sm bg-brand px-3 py-2 text-xs font-bold uppercase tracking-[0.08em] text-black min-[400px]:px-4 min-[400px]:tracking-[0.12em] transition-colors hover:bg-brand/85 pointer-coarse:py-3.5"
             >
               {t("login")}
               <span aria-hidden="true">›</span>
@@ -178,7 +178,7 @@ export function Navbar() {
           </div>
           <div className="mt-2 flex items-center gap-3 border-t border-zinc-800/60 pt-3">
             <LanguageSwitcher className="inline-flex" />
-            <ThemeToggle />
+            <ThemeToggle className="inline-flex" />
           </div>
         </div>
       )}

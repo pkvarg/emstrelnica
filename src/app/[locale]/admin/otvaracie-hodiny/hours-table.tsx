@@ -168,7 +168,9 @@ export function HoursTable({ hours }: { hours: HoursRow[] }) {
                   <Button
                     variant="destructive"
                     size="xs"
-                    onClick={() => deleteOpeningHours(h.id)}
+                    onClick={() => {
+                      if (confirm(t("confirmDelete"))) deleteOpeningHours(h.id);
+                    }}
                   >
                     {t("delete")}
                   </Button>

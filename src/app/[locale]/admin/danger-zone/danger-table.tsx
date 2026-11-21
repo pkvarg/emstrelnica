@@ -160,7 +160,7 @@ export function DangerTable({ counts }: { counts: Counts }) {
                     onClick={() => doTruncate(row.key)}
                     className={
                       isConfirm
-                        ? "w-full bg-red-600 text-zinc-50 hover:bg-red-500"
+                        ? "w-full bg-red-600 text-white hover:bg-red-500"
                         : "w-full bg-zinc-800 text-zinc-200 hover:bg-red-900/40 hover:text-red-300"
                     }
                   >
@@ -189,7 +189,7 @@ export function DangerTable({ counts }: { counts: Counts }) {
                 onClick={doClearPgBoss}
                 className={
                   confirm === "pgboss"
-                    ? "w-full bg-red-600 text-zinc-50 hover:bg-red-500"
+                    ? "w-full bg-red-600 text-white hover:bg-red-500"
                     : "w-full bg-zinc-800 text-zinc-200 hover:bg-red-900/40 hover:text-red-300"
                 }
               >
@@ -211,7 +211,7 @@ export function DangerTable({ counts }: { counts: Counts }) {
           onClick={doNuke}
           className={
             confirm === "nuke"
-              ? "mt-3 bg-red-600 text-zinc-50 hover:bg-red-500"
+              ? "mt-3 bg-red-600 text-white hover:bg-red-500"
               : "mt-3 bg-red-900/40 text-red-300 hover:bg-red-900/60"
           }
         >

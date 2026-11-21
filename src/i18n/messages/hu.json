@@ -345,6 +345,7 @@
     "cancelOngoingHint": "folyamatban lévő foglalás — a felhasznált idő rögzítésre kerül, a fennmaradó idősáv azonnal felszabadul"
   },
   "openingHours": {
+    "confirmDelete": "Biztosan törli ezt a nyitvatartást?",
     "title": "Nyitvatartás",
     "range": "Lőtér",
     "weekday": "Nap",
@@ -391,6 +392,7 @@
   "booking": {
     "title": "Új foglalás",
     "myBookings": "Foglalásaim",
+    "upcomingTitle": "Közelgő foglalások",
     "range": "Lőtér",
     "date": "Dátum",
     "startTime": "Kezdési idő",

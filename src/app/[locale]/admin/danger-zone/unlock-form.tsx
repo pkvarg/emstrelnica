@@ -35,7 +35,7 @@ export function UnlockForm() {
       <Button
         type="submit"
         disabled={isPending}
-        className="w-full bg-red-600 text-zinc-50 hover:bg-red-500"
+        className="w-full bg-red-600 text-white hover:bg-red-500"
       >
         {isPending ? "…" : t("unlock")}
       </Button>

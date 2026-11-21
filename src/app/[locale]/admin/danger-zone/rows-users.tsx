@@ -90,7 +90,7 @@ export function UsersRowsTable({ users }: { users: UserRow[] }) {
                     onClick={() => handleDelete(u.id)}
                     className={
                       isConfirm
-                        ? "w-full bg-red-600 text-zinc-50 hover:bg-red-500"
+                        ? "w-full bg-red-600 text-white hover:bg-red-500"
                         : "w-full bg-zinc-800 text-zinc-200 hover:bg-red-900/40 hover:text-red-300"
                     }
                   >

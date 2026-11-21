@@ -30,7 +30,7 @@ function applyTheme(theme: Theme) {
   window.dispatchEvent(new Event(CHANGE_EVENT));
 }
 
-export function ThemeToggle({ className = "" }: { className?: string }) {
+export function ThemeToggle({ className = "inline-flex" }: { className?: string }) {
   const t = useTranslations("common");
   const theme = useSyncExternalStore<Theme>(subscribe, readTheme, () => "dark");
   const next: Theme = theme === "dark" ? "light" : "dark";
@@ -41,7 +41,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       onClick={() => applyTheme(next)}
       aria-label={next === "light" ? t("lightMode") : t("darkMode")}
       title={next === "light" ? t("lightMode") : t("darkMode")}
-      className={`inline-flex h-8 w-8 touch-manipulation items-center justify-center rounded border border-zinc-700 text-zinc-300 transition-colors hover:border-brand/50 hover:text-brand pointer-coarse:h-11 pointer-coarse:w-11 ${className}`}
+      className={`h-8 w-8 touch-manipulation items-center justify-center rounded border border-zinc-700 text-zinc-300 transition-colors hover:border-brand/50 hover:text-brand pointer-coarse:h-11 pointer-coarse:w-11 ${className}`}
     >
       {theme === "dark" ? (
         <Sun size={16} aria-hidden="true" />

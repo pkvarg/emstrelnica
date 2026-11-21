@@ -82,7 +82,7 @@ export function AddClosureForm({ ranges }: { ranges: Range[] }) {
             </p>
           </div>
 
-          <p className="mt-3 text-sm font-medium text-red-200">
+          <p className="mt-3 text-sm font-medium text-red-300">
             {t("conflictBody", { count: conflicts.length })}
           </p>
 
@@ -108,7 +108,7 @@ export function AddClosureForm({ ranges }: { ranges: Range[] }) {
               onChange={(e) => setAcknowledged(e.target.checked)}
               className="mt-0.5 h-4 w-4 accent-red-600"
             />
-            <span className="text-sm font-medium text-red-100">
+            <span className="text-sm font-medium text-red-300">
               {t("conflictAck")}
             </span>
           </label>
