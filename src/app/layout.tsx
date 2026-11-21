@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 
@@ -14,10 +14,15 @@ const bebasNeue = Bebas_Neue({
 });
 
 export const metadata: Metadata = {
-  title: "Strelnica",
+  title: { default: "Strelnica", template: "%s | Strelnica" },
   description: "Rezervačný systém strelnice",
   // Demo site with a fictional range: keep it out of search results.
   robots: { index: false, follow: false },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#09090b",
+  colorScheme: "dark",
 };
 
 export default async function RootLayout({

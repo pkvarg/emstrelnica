@@ -71,7 +71,7 @@ export function InviteDialog() {
           </div>
 
           {state?.error && (
-            <p className="text-sm text-red-600">{state.error}</p>
+            <p role="alert" className="text-sm text-red-400">{state.error}</p>
           )}
 
           {state?.success && state.invitationUrl && (
@@ -88,7 +88,7 @@ export function InviteDialog() {
           )}
 
           <Button type="submit" className="w-full" disabled={isPending}>
-            {isPending ? "..." : t("inviteMember")}
+            {isPending ? "…" : t("inviteMember")}
           </Button>
         </form>
       </DialogContent>

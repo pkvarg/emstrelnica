@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import { getLocale } from "next-intl/server";
 import { getLatestConsent } from "@/lib/consent";
 import { marked } from "marked";
 import { fmtDate } from "@/lib/format";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: locale === "hu" ? "Lőtér szabályzat" : "Pravidlá strelnice" };
+}
 
 export default async function RangeRulesPage() {
   const locale = (await getLocale()) as "sk" | "hu";

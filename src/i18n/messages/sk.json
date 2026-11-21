@@ -2,6 +2,9 @@
   "common": {
     "appName": "Strelnica",
     "home": "Domov",
+    "menu": "Menu",
+    "skipToContent": "Preskočiť na obsah",
+    "pendingRequests": "Žiadosti čakajúce na schválenie: {count}",
     "login": "Prihlásenie",
     "logout": "Odhlásenie",
     "contact": "Kontakt",
@@ -9,7 +12,7 @@
     "rules": "Pravidlá strelnice",
     "terms": "Obchodné podmienky",
     "impressum": "Impressum",
-    "loading": "Načítava sa...",
+    "loading": "Načítava sa…",
     "save": "Uložiť",
     "cancel": "Zrušiť",
     "confirm": "Potvrdiť",
@@ -29,7 +32,7 @@
     "myAccount": "Môj účet",
     "filter": "Filtrovať",
     "show": "Zobraziť",
-    "saving": "Ukladám...",
+    "saving": "Ukladám…",
     "saved": "Uložené",
     "dash": "—"
   },
@@ -521,7 +524,7 @@
     "cancelled": "Zrušené",
     "recordPayment": "Zaznamenať platbu",
     "member": "Člen",
-    "choose": "Vybrať...",
+    "choose": "Vybrať…",
     "sum": "Suma (EUR)",
     "method": "Spôsob platby",
     "note": "Poznámka",
@@ -603,7 +606,7 @@
   },
   "contactLog": {
     "title": "Kontaktné správy ({count})",
-    "searchPlaceholder": "Hľadať podľa mena, emailu, IP...",
+    "searchPlaceholder": "Hľadať podľa mena, emailu, IP…",
     "columns": {
       "sender": "Odosielateľ",
       "ip": "IP",
@@ -684,7 +687,7 @@
     "title": "Rate Limits",
     "description": "Aktívne rate-limit záznamy (in-memory). Vymazanie odblokuje IP.",
     "clearAll": "Vymazať všetky",
-    "loading": "Načítavam...",
+    "loading": "Načítavam…",
     "empty": "Žiadne aktívne rate-limit záznamy.",
     "columns": {
       "type": "Typ",

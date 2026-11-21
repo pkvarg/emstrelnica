@@ -99,11 +99,11 @@ export default function InvitationPage() {
           </div>
 
           {state?.error && (
-            <p className="text-sm text-red-600">{t(state.error)}</p>
+            <p role="alert" className="text-sm text-red-400">{t(state.error)}</p>
           )}
 
           <Button type="submit" className="w-full" disabled={isPending}>
-            {isPending ? "..." : t("activate")}
+            {isPending ? "…" : t("activate")}
           </Button>
         </form>
       </div>

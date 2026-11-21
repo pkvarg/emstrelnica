@@ -152,7 +152,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
+    <main className="mx-auto max-w-4xl px-4 py-16">
       <h1 className="font-[family-name:var(--font-bebas)] text-4xl tracking-wide text-zinc-50">
         {l.title}
       </h1>
@@ -162,9 +162,11 @@ export default function ContactPage() {
         <input type="hidden" name="locale" value={locale} />
 
         <div className="space-y-1.5">
-          <Label className="text-zinc-400">{l.name}</Label>
+          <Label htmlFor="contact-name" className="text-zinc-400">{l.name}</Label>
           <Input
+            id="contact-name"
             name="name"
+            autoComplete="name"
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -173,10 +175,13 @@ export default function ContactPage() {
         </div>
 
         <div className="space-y-1.5">
-          <Label className="text-zinc-400">{l.email}</Label>
+          <Label htmlFor="contact-email" className="text-zinc-400">{l.email}</Label>
           <Input
+            id="contact-email"
             name="email"
             type="email"
+            autoComplete="email"
+            spellCheck={false}
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -185,10 +190,12 @@ export default function ContactPage() {
         </div>
 
         <div className="space-y-1.5">
-          <Label className="text-zinc-400">{l.phone}</Label>
+          <Label htmlFor="contact-phone" className="text-zinc-400">{l.phone}</Label>
           <Input
+            id="contact-phone"
             name="phone"
             type="tel"
+            autoComplete="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             className="bg-zinc-900 border-zinc-800"
@@ -223,19 +230,20 @@ export default function ContactPage() {
         </div>
 
         <div className="space-y-1.5">
-          <Label className="text-zinc-400">{l.message}</Label>
+          <Label htmlFor="contact-message" className="text-zinc-400">{l.message}</Label>
           <textarea
+            id="contact-message"
             name="message"
             required
             rows={5}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-amber-600/50 focus:ring-1 focus:ring-amber-600/30"
+            className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none focus-visible:border-amber-600 focus-visible:ring-2 focus-visible:ring-amber-600/50"
           />
         </div>
 
-        <label className="flex items-center gap-2 text-sm text-zinc-400">
-          <input type="checkbox" required className="shrink-0 accent-amber-600" />
+        <label className="flex items-center gap-2 text-sm text-zinc-400 pointer-coarse:min-h-11">
+          <input type="checkbox" required className="shrink-0 accent-amber-600 pointer-coarse:size-5" />
           <span>
             {l.gdprAgree}{" "}
             <a href={`/${locale}/gdpr`} target="_blank" className="text-amber-500 underline underline-offset-2 hover:text-amber-400">
@@ -245,7 +253,7 @@ export default function ContactPage() {
         </label>
 
         {state?.error && (
-          <p className="text-sm text-red-400">
+          <p role="alert" className="text-sm text-red-400">
             {l[state.error as keyof typeof l] ?? state.error}
           </p>
         )}
@@ -255,9 +263,9 @@ export default function ContactPage() {
           disabled={isPending}
           className="w-full bg-amber-600 text-zinc-950 hover:bg-amber-500"
         >
-          {isPending ? "..." : l.send}
+          {isPending ? "…" : l.send}
         </Button>
       </form>
-    </div>
+    </main>
   );
 }

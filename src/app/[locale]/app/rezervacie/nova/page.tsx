@@ -380,13 +380,13 @@ export default function NewBookingPage() {
           </div>
 
           {state?.error && (
-            <p className="text-sm text-red-600">
+            <p role="alert" className="text-sm text-red-400">
               {t.has(state.error) ? t(state.error as "slotTaken") : state.error}
             </p>
           )}
 
           <Button type="submit" className="w-full" disabled={isPending}>
-            {isPending ? "..." : t("submit")}
+            {isPending ? "…" : t("submit")}
           </Button>
         </form>
       </div>

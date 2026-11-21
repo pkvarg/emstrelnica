@@ -169,7 +169,7 @@ export function BookingsList({
                           disabled={submitting}
                           onClick={() => handleCancel(b.id)}
                         >
-                          {submitting ? "..." : t("confirmCancel")}
+                          {submitting ? "…" : t("confirmCancel")}
                         </Button>
                         <Button
                           variant="outline"

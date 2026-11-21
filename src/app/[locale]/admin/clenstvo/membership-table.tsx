@@ -76,7 +76,7 @@ export function MembershipTable({ rows, year }: { rows: Row[]; year: number }) {
               </TableCell>
               <TableCell>
                 {cancelled ? (
-                  <span className="text-xs text-red-600">{t("cancelled")}</span>
+                  <span className="text-xs text-red-400">{t("cancelled")}</span>
                 ) : paid ? (
                   <span className="text-xs text-green-700">
                     {fmtDate(m.paidAt, locale)}

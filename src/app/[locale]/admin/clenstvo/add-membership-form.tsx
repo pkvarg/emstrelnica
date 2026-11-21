@@ -61,11 +61,11 @@ export function AddMembershipForm({
         </div>
       </div>
 
-      {state?.error && <p className="mt-2 text-sm text-red-600">{state.error}</p>}
+      {state?.error && <p role="alert" className="mt-2 text-sm text-red-400">{state.error}</p>}
       {state?.success && <p className="mt-2 text-sm text-green-700">{t("paymentRecorded")}</p>}
 
       <Button type="submit" className="mt-4" disabled={isPending}>
-        {isPending ? "..." : t("recordButton")}
+        {isPending ? "…" : t("recordButton")}
       </Button>
     </form>
   );

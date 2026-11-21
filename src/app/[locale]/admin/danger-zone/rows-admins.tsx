@@ -110,7 +110,7 @@ export function AdminsRowsTable({ admins }: { admins: AdminRow[] }) {
                       }
                     >
                       {busy
-                        ? "..."
+                        ? "…"
                         : suspended
                           ? t("activate")
                           : t("suspend")}

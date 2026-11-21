@@ -81,11 +81,11 @@ export function AddHoursForm({ ranges }: { ranges: Range[] }) {
         </div>
       </div>
 
-      {state?.error && <p className="mt-2 text-sm text-red-600">{state.error}</p>}
+      {state?.error && <p role="alert" className="mt-2 text-sm text-red-400">{state.error}</p>}
       {state?.success && <p className="mt-2 text-sm text-green-700">{t("saved")}</p>}
 
       <Button type="submit" className="mt-4" disabled={isPending || selectedDays.length === 0}>
-        {isPending ? "..." : t("add")}
+        {isPending ? "…" : t("add")}
         {selectedDays.length > 1 && ` ${t("daysSuffix", { count: selectedDays.length })}`}
       </Button>
     </form>

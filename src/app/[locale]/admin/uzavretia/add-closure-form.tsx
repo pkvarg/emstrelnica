@@ -121,12 +121,12 @@ export function AddClosureForm({ ranges }: { ranges: Range[] }) {
             className="mt-4"
             disabled={isPending || !acknowledged}
           >
-            {isPending ? "..." : t("confirmCancelAll", { count: conflicts.length })}
+            {isPending ? "…" : t("confirmCancelAll", { count: conflicts.length })}
           </Button>
         </div>
       )}
 
-      {state?.error && <p className="mt-2 text-sm text-red-600">{state.error}</p>}
+      {state?.error && <p role="alert" className="mt-2 text-sm text-red-400">{state.error}</p>}
       {state?.success &&
         (state.cancelledCount ? (
           <p className="mt-2 text-sm text-amber-400">
@@ -138,7 +138,7 @@ export function AddClosureForm({ ranges }: { ranges: Range[] }) {
 
       {!hasConflicts && (
         <Button type="submit" className="mt-4" disabled={isPending}>
-          {isPending ? "..." : t("add")}
+          {isPending ? "…" : t("add")}
         </Button>
       )}
     </form>

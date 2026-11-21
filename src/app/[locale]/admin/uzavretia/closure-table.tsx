@@ -122,7 +122,7 @@ function EditCard({
 
         <div className="flex gap-2">
           <Button type="submit" size="sm" disabled={saving}>
-            {saving ? "..." : tCommon("save")}
+            {saving ? "…" : tCommon("save")}
           </Button>
           <Button type="button" variant="ghost" size="sm" onClick={onClose}>
             {tCommon("cancel")}

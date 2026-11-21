@@ -49,7 +49,7 @@ export function UserActions({
         </Button>
       ) : (
         <div className="flex items-center gap-2">
-          <p className="text-sm text-red-600">{t("anonymizeConfirm")}</p>
+          <p role="alert" className="text-sm text-red-400">{t("anonymizeConfirm")}</p>
           <Button
             variant="destructive"
             size="sm"

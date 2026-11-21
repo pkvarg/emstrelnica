@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import CookieConsent from "react-cookie-consent";
+import CookieConsent, { getCookieConsentValue } from "react-cookie-consent";
 import { useLocale } from "next-intl";
 import { incrementVisitors } from "@/lib/visitors";
 
@@ -29,6 +29,20 @@ export function CookieBanner() {
   const [visible, setVisible] = useState<"byCookieValue" | "show" | "hidden">("byCookieValue");
 
   // "Nastavenia cookies" in the footer reopens the bar to change the choice.
+  const [undecided, setUndecided] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    queueMicrotask(() => {
+      if (active) setUndecided(getCookieConsentValue() === undefined);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const shown = visible === "show" || (visible === "byCookieValue" && undecided);
+
   useEffect(() => {
     const reopen = () => setVisible("show");
     window.addEventListener(OPEN_COOKIE_SETTINGS, reopen);
@@ -46,6 +60,8 @@ export function CookieBanner() {
   };
 
   return (
+    <>
+    {shown && <div aria-hidden className="h-44 shrink-0 sm:h-16" />}
     <CookieConsent
       visible={visible}
       location="bottom"
@@ -86,5 +102,6 @@ export function CookieBanner() {
         {l.more}
       </Link>
     </CookieConsent>
+    </>
   );
 }

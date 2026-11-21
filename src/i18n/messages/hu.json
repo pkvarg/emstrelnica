@@ -2,6 +2,9 @@
   "common": {
     "appName": "Lőtér",
     "home": "Főoldal",
+    "menu": "Menü",
+    "skipToContent": "Ugrás a tartalomra",
+    "pendingRequests": "Jóváhagyásra váró kérelmek: {count}",
     "login": "Bejelentkezés",
     "logout": "Kijelentkezés",
     "contact": "Kapcsolat",
@@ -9,7 +12,7 @@
     "rules": "Lőtér szabályzat",
     "terms": "ÁSZF",
     "impressum": "Impresszum",
-    "loading": "Betöltés...",
+    "loading": "Betöltés…",
     "save": "Mentés",
     "cancel": "Mégsem",
     "confirm": "Megerősítés",
@@ -29,7 +32,7 @@
     "myAccount": "Fiókom",
     "filter": "Szűrés",
     "show": "Megjelenítés",
-    "saving": "Mentés...",
+    "saving": "Mentés…",
     "saved": "Mentve",
     "dash": "—"
   },
@@ -521,7 +524,7 @@
     "cancelled": "Törölve",
     "recordPayment": "Fizetés rögzítése",
     "member": "Tag",
-    "choose": "Válasszon...",
+    "choose": "Válasszon…",
     "sum": "Összeg (EUR)",
     "method": "Fizetési mód",
     "note": "Megjegyzés",
@@ -603,7 +606,7 @@
   },
   "contactLog": {
     "title": "Kapcsolatfelvételi üzenetek ({count})",
-    "searchPlaceholder": "Keresés név, e-mail, IP alapján...",
+    "searchPlaceholder": "Keresés név, e-mail, IP alapján…",
     "columns": {
       "sender": "Feladó",
       "ip": "IP",
@@ -684,7 +687,7 @@
     "title": "Rate Limits",
     "description": "Aktív rate-limit rekordok (in-memory). Törléssel feloldható az IP.",
     "clearAll": "Összes törlése",
-    "loading": "Betöltés...",
+    "loading": "Betöltés…",
     "empty": "Nincsenek aktív rate-limit rekordok.",
     "columns": {
       "type": "Típus",

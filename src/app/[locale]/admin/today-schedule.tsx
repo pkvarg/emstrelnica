@@ -129,7 +129,7 @@ export function TodaySchedule({ bookings }: { bookings: TodayBooking[] }) {
                     disabled={submitting}
                     onClick={() => handleCancel(b.id)}
                   >
-                    {submitting ? "..." : tBooking("confirmCancel")}
+                    {submitting ? "…" : tBooking("confirmCancel")}
                   </Button>
                   <Button
                     variant="outline"

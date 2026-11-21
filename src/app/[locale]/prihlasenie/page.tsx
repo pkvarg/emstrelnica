@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(loginAction, null);
 
   return (
-    <div className="flex flex-1 items-center justify-center">
+    <main className="flex flex-1 items-center justify-center">
       <div className="w-full max-w-sm space-y-6 p-6">
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-bold">{t("loginTitle")}</h1>
@@ -49,7 +49,7 @@ export default function LoginPage() {
           </div>
 
           {state?.error && (
-            <p className="text-sm text-red-600">{t(state.error)}</p>
+            <p role="alert" className="text-sm text-red-400">{t(state.error)}</p>
           )}
 
           <Button
@@ -57,7 +57,7 @@ export default function LoginPage() {
             className="w-full bg-amber-600 text-zinc-950 hover:bg-amber-500"
             disabled={isPending}
           >
-            {isPending ? "..." : t("loginButton")}
+            {isPending ? "…" : t("loginButton")}
           </Button>
 
           <div className="text-center text-sm">
@@ -70,6 +70,6 @@ export default function LoginPage() {
           </div>
         </form>
       </div>
-    </div>
+    </main>
   );
 }

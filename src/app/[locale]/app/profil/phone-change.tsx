@@ -105,7 +105,7 @@ export function PhoneChange({ currentPhone }: Props) {
               disabled={reqPending}
               className="bg-amber-600 text-zinc-950 hover:bg-amber-500"
             >
-              {reqPending ? "..." : t("phoneSendCode")}
+              {reqPending ? "…" : t("phoneSendCode")}
             </Button>
             <Button
               type="button"
@@ -188,7 +188,7 @@ function VerifyStep({
             disabled={pending}
             className="bg-amber-600 text-zinc-950 hover:bg-amber-500"
           >
-            {pending ? "..." : tCommon("confirm")}
+            {pending ? "…" : tCommon("confirm")}
           </Button>
           <Button type="button" variant="outline" onClick={onCancel}>
             {tCommon("cancel")}

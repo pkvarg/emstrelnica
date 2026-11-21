@@ -40,7 +40,7 @@ export function DecideForm({
       )}
 
       {state?.error && (
-        <p className="text-sm text-red-600">{state.error}</p>
+        <p role="alert" className="text-sm text-red-400">{state.error}</p>
       )}
 
       <Button
@@ -50,7 +50,7 @@ export function DecideForm({
         disabled={isPending}
       >
         {isPending
-          ? "..."
+          ? "…"
           : action === "approve"
             ? t("approve")
             : t("decline")}

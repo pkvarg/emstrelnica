@@ -87,7 +87,7 @@ export function ContactFormSettings({
           value={bcc}
           onChange={(e) => setBcc(e.target.value)}
           placeholder={t("contactFormBccExtraPlaceholder")}
-          className="w-full rounded-lg border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-amber-600 focus:outline-none"
+          className="w-full rounded-lg border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus-visible:border-amber-600 focus-visible:ring-2 focus-visible:ring-amber-600/50"
         />
       </div>
 

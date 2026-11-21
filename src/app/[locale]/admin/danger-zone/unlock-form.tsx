@@ -31,14 +31,14 @@ export function UnlockForm() {
         />
       </div>
 
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <p role="alert" className="text-sm text-red-400">{state.error}</p>}
 
       <Button
         type="submit"
         disabled={isPending}
         className="w-full bg-red-600 text-zinc-50 hover:bg-red-500"
       >
-        {isPending ? "..." : t("unlock")}
+        {isPending ? "…" : t("unlock")}
       </Button>
     </form>
   );

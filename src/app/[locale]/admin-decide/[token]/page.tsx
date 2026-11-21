@@ -16,7 +16,7 @@ export default async function DecidePage({
   if (!details) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-red-600">{t("decide.invalidLink")}</p>
+        <p role="alert" className="text-red-400">{t("decide.invalidLink")}</p>
       </div>
     );
   }
@@ -32,7 +32,7 @@ export default async function DecidePage({
   if (details.expired) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-red-600">{t("decide.linkExpired")}</p>
+        <p role="alert" className="text-red-400">{t("decide.linkExpired")}</p>
       </div>
     );
   }

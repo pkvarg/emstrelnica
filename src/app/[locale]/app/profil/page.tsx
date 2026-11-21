@@ -140,7 +140,7 @@ export default function ProfilePage() {
 
         <div className="flex gap-4 pt-4">
           <Button type="submit" disabled={isPending}>
-            {isPending ? "..." : t("personalInfo")}
+            {isPending ? "…" : t("personalInfo")}
           </Button>
           <a
             href="/api/profile/export"

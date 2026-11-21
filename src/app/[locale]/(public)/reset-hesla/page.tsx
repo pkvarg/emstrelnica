@@ -15,7 +15,7 @@ export default function RequestResetPage() {
   );
 
   return (
-    <div className="flex flex-1 items-center justify-center">
+    <main className="flex flex-1 items-center justify-center">
       <div className="w-full max-w-sm space-y-6 p-6">
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-bold">{t("title")}</h1>
@@ -32,7 +32,7 @@ export default function RequestResetPage() {
             </div>
 
             {state?.error && (
-              <p className="text-sm text-red-600">{state.error}</p>
+              <p role="alert" className="text-sm text-red-400">{state.error}</p>
             )}
 
             <Button
@@ -40,11 +40,11 @@ export default function RequestResetPage() {
               className="w-full bg-amber-600 text-zinc-950 hover:bg-amber-500"
               disabled={isPending}
             >
-              {isPending ? "..." : t("send")}
+              {isPending ? "…" : t("send")}
             </Button>
           </form>
         )}
       </div>
-    </div>
+    </main>
   );
 }

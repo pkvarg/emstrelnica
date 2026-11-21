@@ -26,7 +26,7 @@ export function CheckInForm({ token }: { token: string }) {
         className="w-full bg-amber-600 text-zinc-950 hover:bg-amber-500"
         disabled={isPending}
       >
-        {isPending ? "..." : t("confirmButton")}
+        {isPending ? "…" : t("confirmButton")}
       </Button>
     </form>
   );

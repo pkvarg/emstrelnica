@@ -104,7 +104,7 @@ function EditCard({
 
         <div className="flex gap-2">
           <Button type="submit" size="sm" disabled={isPending}>
-            {isPending ? "..." : t("saveButton")}
+            {isPending ? "…" : t("saveButton")}
           </Button>
           <Button type="button" variant="ghost" size="sm" onClick={onClose}>
             {t("cancelButton")}
@@ -172,7 +172,7 @@ function AddWeaponForm({ userId }: { userId: string }) {
           disabled={isPending}
           className="bg-amber-600 text-white hover:bg-amber-700"
         >
-          {isPending ? "..." : t("addButton")}
+          {isPending ? "…" : t("addButton")}
         </Button>
       </div>
     </form>

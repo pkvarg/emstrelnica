@@ -40,7 +40,7 @@ export function AdminOtpForm() {
       </label>
 
       {state?.error && (
-        <p className="text-sm text-red-600">{t(state.error)}</p>
+        <p role="alert" className="text-sm text-red-400">{t(state.error)}</p>
       )}
 
       <Button
@@ -48,7 +48,7 @@ export function AdminOtpForm() {
         className="w-full bg-amber-600 text-zinc-950 hover:bg-amber-500"
         disabled={isPending}
       >
-        {isPending ? "..." : t("submit")}
+        {isPending ? "…" : t("submit")}
       </Button>
     </form>
   );

@@ -122,11 +122,11 @@ export function PublishForm({ latest }: { latest: LatestDoc[] }) {
         />
       </div>
 
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <p role="alert" className="text-sm text-red-400">{state.error}</p>}
       {state?.success && <p className="text-sm text-green-700">{t("success")}</p>}
 
       <Button type="submit" disabled={isPending}>
-        {isPending ? "..." : t("publish")}
+        {isPending ? "…" : t("publish")}
       </Button>
     </form>
   );

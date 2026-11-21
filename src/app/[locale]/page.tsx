@@ -130,7 +130,7 @@ function ResourceCard({
   return (
     <Link
       href={href}
-      className="group relative flex flex-col overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/50 p-7 transition-all duration-300 hover:border-brand/40 hover:bg-zinc-900/80"
+      className="group relative flex flex-col overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/50 p-7 transition-colors duration-300 hover:border-brand/40 hover:bg-zinc-900/80"
     >
       <div className="absolute -right-3 -top-5 font-[family-name:var(--font-bebas)] text-[100px] italic leading-none text-zinc-800/40 transition-colors group-hover:text-brand/10">
         {String(index + 1).padStart(2, "0")}
@@ -159,7 +159,7 @@ function ResourceCard({
         )}
         <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.15em] text-brand opacity-80 transition-opacity group-hover:opacity-100">
           {bookLabel}
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </span>
@@ -196,6 +196,7 @@ export default async function HomePage({
 
   return (
     <div className="flex flex-col">
+      <main className="flex flex-col">
       <section className="relative overflow-hidden border-b border-zinc-800">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -227,7 +228,7 @@ export default async function HomePage({
                 className="inline-flex items-center gap-2 rounded-sm bg-brand-red px-7 py-3.5 text-sm font-bold uppercase tracking-[0.1em] text-white shadow-lg shadow-brand-red/20 transition-colors hover:bg-brand-red/85"
               >
                 {t("landing.heroCta")}
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </Link>
@@ -284,6 +285,7 @@ export default async function HomePage({
           <AvailabilityCalendar />
         </div>
       </section>
+      </main>
 
       <footer className="bg-zinc-950">
         <div className="mx-auto max-w-6xl px-4 py-12">
