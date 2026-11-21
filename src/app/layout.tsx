@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Bebas_Neue } from "next/font/google";
+import { getLocale } from "next-intl/server";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -27,13 +28,10 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({
   children,
-  params,
 }: Readonly<{
   children: React.ReactNode;
-  params?: Promise<{ locale?: string }>;
 }>) {
-  const resolvedParams = params ? await params : {};
-  const lang = resolvedParams.locale || "sk";
+  const lang = await getLocale();
 
   return (
     <html

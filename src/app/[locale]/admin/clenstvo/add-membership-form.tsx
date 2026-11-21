@@ -28,8 +28,8 @@ export function AddMembershipForm({
       <h2 className="mb-4 font-semibold">{t("recordPayment")}</h2>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <div className="space-y-1">
-          <Label>{t("member")}</Label>
-          <select name="userId" className="w-full rounded-md border px-3 py-2 text-sm" required>
+          <Label htmlFor="membership-userId">{t("member")}</Label>
+          <select id="membership-userId" name="userId" className="w-full rounded-md border px-3 py-2 text-sm" required>
             <option value="">{t("choose")}</option>
             {members.map((m) => (
               <option key={m.id} value={m.id}>
@@ -42,13 +42,13 @@ export function AddMembershipForm({
         <input type="hidden" name="year" value={year} />
 
         <div className="space-y-1">
-          <Label>{t("sum")}</Label>
-          <Input name="feeAmount" type="number" step="0.01" defaultValue="50.00" required />
+          <Label htmlFor="membership-feeAmount">{t("sum")}</Label>
+          <Input id="membership-feeAmount" name="feeAmount" type="number" step="0.01" defaultValue="50.00" required />
         </div>
 
         <div className="space-y-1">
-          <Label>{t("method")}</Label>
-          <select name="paymentMethod" className="w-full rounded-md border px-3 py-2 text-sm" required>
+          <Label htmlFor="membership-paymentMethod">{t("method")}</Label>
+          <select id="membership-paymentMethod" name="paymentMethod" className="w-full rounded-md border px-3 py-2 text-sm" required>
             <option value="cash">{t("methodCash")}</option>
             <option value="transfer">{t("methodTransfer")}</option>
             <option value="other">{t("methodOther")}</option>
@@ -56,8 +56,8 @@ export function AddMembershipForm({
         </div>
 
         <div className="space-y-1">
-          <Label>{t("note")}</Label>
-          <Input name="note" />
+          <Label htmlFor="membership-note">{t("note")}</Label>
+          <Input id="membership-note" name="note" />
         </div>
       </div>
 

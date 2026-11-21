@@ -31,8 +31,8 @@ export function AddClosureForm({ ranges }: { ranges: Range[] }) {
     <form action={formAction} className="rounded-lg border p-4">
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
         <div className="space-y-1">
-          <Label>{t("range")}</Label>
-          <select name="rangeId" className="w-full rounded-md border px-3 py-2 text-sm">
+          <Label htmlFor="closure-rangeId">{t("range")}</Label>
+          <select id="closure-rangeId" name="rangeId" className="w-full rounded-md border px-3 py-2 text-sm">
             <option value="">{t("allRanges")}</option>
             {ranges.map((r) => (
               <option key={r.id} value={r.id}>{r.nameSk}</option>
@@ -41,35 +41,35 @@ export function AddClosureForm({ ranges }: { ranges: Range[] }) {
         </div>
 
         <div className="space-y-1">
-          <Label>{t("startsAt")}</Label>
-          <Input name="startDate" type="date" required />
+          <Label htmlFor="closure-startDate">{t("startsAt")}</Label>
+          <Input id="closure-startDate" name="startDate" type="date" required />
         </div>
 
         <div className="space-y-1">
-          <Label>{t("endsAt")}</Label>
-          <Input name="endDate" type="date" required />
+          <Label htmlFor="closure-endDate">{t("endsAt")}</Label>
+          <Input id="closure-endDate" name="endDate" type="date" required />
         </div>
 
         <div className="space-y-1">
-          <Label>{t("timeFromOptional")}</Label>
-          <Input name="startTime" type="time" placeholder="00:00" />
+          <Label htmlFor="closure-startTime">{t("timeFromOptional")}</Label>
+          <Input id="closure-startTime" name="startTime" type="time" placeholder="00:00" />
         </div>
 
         <div className="space-y-1">
-          <Label>{t("timeToOptional")}</Label>
-          <Input name="endTime" type="time" placeholder="23:59" />
+          <Label htmlFor="closure-endTime">{t("timeToOptional")}</Label>
+          <Input id="closure-endTime" name="endTime" type="time" placeholder="23:59" />
         </div>
 
         <div />
 
         <div className="space-y-1">
-          <Label>{t("reasonSk")}</Label>
-          <Input name="reasonSk" />
+          <Label htmlFor="closure-reasonSk">{t("reasonSk")}</Label>
+          <Input id="closure-reasonSk" name="reasonSk" />
         </div>
 
         <div className="space-y-1">
-          <Label>{t("reasonHu")}</Label>
-          <Input name="reasonHu" />
+          <Label htmlFor="closure-reasonHu">{t("reasonHu")}</Label>
+          <Input id="closure-reasonHu" name="reasonHu" />
         </div>
       </div>
 

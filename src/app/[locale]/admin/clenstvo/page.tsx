@@ -59,7 +59,7 @@ export default async function MembershipPage({
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t("title")} — {year}</h1>
         <form className="flex gap-2">
-          <select name="year" className="rounded-md border px-3 py-1.5 text-sm" defaultValue={year}>
+          <select name="year" aria-label={tCommon("year")} className="rounded-md border px-3 py-1.5 text-sm" defaultValue={year}>
             {[2024, 2025, 2026, 2027].map((y) => (
               <option key={y} value={y}>{y}</option>
             ))}

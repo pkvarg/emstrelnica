@@ -28,8 +28,8 @@ export function AddHoursForm({ ranges }: { ranges: Range[] }) {
     <form action={formAction} className="rounded-lg border p-4">
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <div className="space-y-1">
-          <Label>{t("range")}</Label>
-          <select name="rangeId" className="w-full rounded-md border px-3 py-2 text-sm" required>
+          <Label htmlFor="hours-rangeId">{t("range")}</Label>
+          <select id="hours-rangeId" name="rangeId" className="w-full rounded-md border px-3 py-2 text-sm" required>
             <option value="__all__">{t("allRanges")}</option>
             {ranges.map((r) => (
               <option key={r.id} value={r.id}>{r.nameSk}</option>
@@ -61,23 +61,23 @@ export function AddHoursForm({ ranges }: { ranges: Range[] }) {
         </div>
 
         <div className="space-y-1">
-          <Label>{t("startTime")}</Label>
-          <Input name="startTime" type="time" required />
+          <Label htmlFor="hours-startTime">{t("startTime")}</Label>
+          <Input id="hours-startTime" name="startTime" type="time" required />
         </div>
 
         <div className="space-y-1">
-          <Label>{t("endTime")}</Label>
-          <Input name="endTime" type="time" required />
+          <Label htmlFor="hours-endTime">{t("endTime")}</Label>
+          <Input id="hours-endTime" name="endTime" type="time" required />
         </div>
 
         <div className="space-y-1">
-          <Label>{t("validFrom")}</Label>
-          <Input name="validFrom" type="date" required />
+          <Label htmlFor="hours-validFrom">{t("validFrom")}</Label>
+          <Input id="hours-validFrom" name="validFrom" type="date" required />
         </div>
 
         <div className="space-y-1">
-          <Label>{t("validTo")}</Label>
-          <Input name="validTo" type="date" />
+          <Label htmlFor="hours-validTo">{t("validTo")}</Label>
+          <Input id="hours-validTo" name="validTo" type="date" />
         </div>
       </div>
 

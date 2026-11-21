@@ -57,6 +57,7 @@ export function AdminBookingsTable({
   ranges: Range[];
 }) {
   const t = useTranslations("booking");
+  const tCommon = useTranslations("common");
   const tAdmin = useTranslations("admin");
   const rangeMap = Object.fromEntries(ranges.map((r) => [r.id, r.nameSk]));
   const [cancellingId, setCancellingId] = useState<string | null>(null);
@@ -186,7 +187,7 @@ export function AdminBookingsTable({
                         setReason("");
                       }}
                       className="text-zinc-500 hover:text-zinc-300"
-                      aria-label="close"
+                      aria-label={tCommon("close")}
                     >
                       <X size={16} />
                     </button>

@@ -54,8 +54,8 @@ function EditCard({
     <div className="rounded-lg border border-amber-800/50 bg-zinc-900 p-4">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-semibold text-amber-400">{t("editTitle")}</h3>
-        <button onClick={onClose} className="text-zinc-500 hover:text-zinc-300">
-          <X size={16} />
+        <button type="button" onClick={onClose} aria-label={tCommon("close")} className="text-zinc-500 hover:text-zinc-300">
+          <X size={16} aria-hidden="true" />
         </button>
       </div>
 
@@ -114,6 +114,7 @@ function EditCard({
 }
 
 export function HoursTable({ hours }: { hours: HoursRow[] }) {
+  const tCommon = useTranslations("common");
   const t = useTranslations("openingHours");
   const days: string[] = t.raw("days");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -160,8 +161,9 @@ export function HoursTable({ hours }: { hours: HoursRow[] }) {
                     size="xs"
                     className="gap-1 text-zinc-400 hover:text-amber-400"
                     onClick={() => setEditingId(editingId === h.id ? null : h.id)}
+                    aria-label={tCommon("edit")}
                   >
-                    <Pencil size={13} />
+                    <Pencil size={13} aria-hidden="true" />
                   </Button>
                   <Button
                     variant="destructive"

@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { unlockDangerZone } from "./actions";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export function UnlockForm() {
   const router = useRouter();
@@ -21,10 +21,9 @@ export function UnlockForm() {
     <form action={formAction} className="mt-6 space-y-4">
       <div className="space-y-2">
         <Label htmlFor="password">{t("password")}</Label>
-        <Input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           autoComplete="off"
           autoFocus
           required

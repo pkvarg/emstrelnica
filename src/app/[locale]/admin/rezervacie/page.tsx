@@ -59,25 +59,25 @@ export default async function AdminBookingsPage({
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">{t("myBookings")}</h1>
+      <h1 className="text-2xl font-bold">{tCommon("bookings")}</h1>
 
       <form className="mt-4 flex flex-wrap gap-3">
-        <select name="rangeId" className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.rangeId ?? ""}>
+        <select name="rangeId" aria-label={tCommon("range")} className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.rangeId ?? ""}>
           <option value="">{tAdmin("allRanges")}</option>
           {allRanges.map((r) => (
             <option key={r.id} value={r.id}>{r.nameSk}</option>
           ))}
         </select>
 
-        <select name="status" className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.status ?? ""}>
+        <select name="status" aria-label={tCommon("status")} className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.status ?? ""}>
           <option value="">{tAdmin("allStatuses")}</option>
           {(["requested", "approved", "declined", "cancelled", "checked_in", "completed", "no_show"] as const).map((s) => (
             <option key={s} value={s}>{t(`status.${s}`)}</option>
           ))}
         </select>
 
-        <input name="from" type="date" className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.from ?? ""} />
-        <input name="to" type="date" className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.to ?? ""} />
+        <input name="from" type="date" aria-label={tCommon("dateFrom")} className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.from ?? ""} />
+        <input name="to" type="date" aria-label={tCommon("dateTo")} className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.to ?? ""} />
 
         <button type="submit" className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm text-white">
           {tCommon("filter")}

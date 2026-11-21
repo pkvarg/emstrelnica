@@ -40,7 +40,7 @@ export default async function AppLayout({
         }}
         locale={locale}
       />
-      <main className="flex-1 p-6 pt-20 md:pt-6">{children}</main>
+      <main className="min-w-0 flex-1 p-6 pt-20 md:pt-6">{children}</main>
     </div>
   );
 }

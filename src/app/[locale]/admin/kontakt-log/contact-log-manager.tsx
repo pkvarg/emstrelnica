@@ -123,6 +123,7 @@ export function ContactLogManager() {
       <div className="mt-4">
         <Input
           placeholder={t("searchPlaceholder")}
+          aria-label={t("searchPlaceholder")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-md"

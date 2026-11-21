@@ -25,6 +25,14 @@ import {
   signAdminLoginTicket,
 } from "@/lib/admin-login-ticket";
 
+// Local development only: never honoured in a production build.
+function adminOtpSkipped(): boolean {
+  return (
+    process.env.NODE_ENV !== "production" &&
+    process.env.SKIP_ADMIN_OTP === "true"
+  );
+}
+
 function sanitizeCallbackUrl(raw: string, locale: string): string | null {
   if (!raw) return null;
   // Only allow relative paths scoped to the current locale, no protocol / host.
@@ -69,6 +77,21 @@ export async function loginAction(
       await writeAudit({
         actorUserId: creds.id,
         action: "login_trusted_device",
+        entityType: "user",
+        entityId: creds.id,
+      });
+
+      return await completeSignInAndRedirect(
+        { proof: issueLoginProof(creds.id) },
+        creds.id,
+        creds.role,
+      );
+    }
+
+    if (adminOtpSkipped()) {
+      await writeAudit({
+        actorUserId: creds.id,
+        action: "login_otp_skipped_dev",
         entityType: "user",
         entityId: creds.id,
       });

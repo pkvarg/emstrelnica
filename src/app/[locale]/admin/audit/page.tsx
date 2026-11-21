@@ -64,22 +64,22 @@ export default async function AuditLogPage({
       <h1 className="text-2xl font-bold">{t("title")}</h1>
 
       <form className="mt-4 flex flex-wrap gap-3">
-        <select name="action" className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.action ?? ""}>
+        <select name="action" aria-label={t("allActions")} className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.action ?? ""}>
           <option value="">{t("allActions")}</option>
           {actions.map((a) => (
             <option key={a} value={a}>{a}</option>
           ))}
         </select>
 
-        <select name="entityType" className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.entityType ?? ""}>
+        <select name="entityType" aria-label={t("allEntities")} className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.entityType ?? ""}>
           <option value="">{t("allEntities")}</option>
           {entityTypes.map((e) => (
             <option key={e} value={e}>{e}</option>
           ))}
         </select>
 
-        <input name="from" type="date" className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.from ?? ""} />
-        <input name="to" type="date" className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.to ?? ""} />
+        <input name="from" type="date" aria-label={tCommon("dateFrom")} className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.from ?? ""} />
+        <input name="to" type="date" aria-label={tCommon("dateTo")} className="rounded-md border px-3 py-1.5 text-sm" defaultValue={params.to ?? ""} />
 
         <button type="submit" className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm text-white">
           {tCommon("filter")}

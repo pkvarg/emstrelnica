@@ -5,8 +5,8 @@ import { useActionState } from "react";
 import { useParams } from "next/navigation";
 import { resetPassword } from "../actions";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export default function ResetPasswordPage() {
   const t = useTranslations("passwordReset");
@@ -33,20 +33,20 @@ export default function ResetPasswordPage() {
         <form action={formAction} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="password">{t("newPassword")}</Label>
-            <Input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
+              autoComplete="new-password"
               minLength={8}
               required
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
-            <Input
+            <PasswordInput
               id="confirmPassword"
               name="confirmPassword"
-              type="password"
+              autoComplete="new-password"
               minLength={8}
               required
             />

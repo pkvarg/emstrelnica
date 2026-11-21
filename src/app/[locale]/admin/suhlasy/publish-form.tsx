@@ -54,8 +54,8 @@ export function PublishForm({ latest }: { latest: LatestDoc[] }) {
       <h2 className="font-semibold">{t("publishDocument")}</h2>
 
       <div className="space-y-1">
-        <Label>{t("startFromExisting")}</Label>
-        <select
+        <Label htmlFor="consent-start-from">{t("startFromExisting")}</Label>
+        <select id="consent-start-from"
           onChange={onStartFrom}
           className="w-full rounded-md border px-3 py-2 text-sm"
           defaultValue=""
@@ -72,8 +72,8 @@ export function PublishForm({ latest }: { latest: LatestDoc[] }) {
 
       <div className="grid grid-cols-3 gap-4">
         <div className="space-y-1">
-          <Label>{t("type")}</Label>
-          <select
+          <Label htmlFor="consent-kind">{t("type")}</Label>
+          <select id="consent-kind"
             name="kind"
             value={kind}
             onChange={(e) => setKind(e.target.value as ConsentKind)}
@@ -86,8 +86,8 @@ export function PublishForm({ latest }: { latest: LatestDoc[] }) {
           </select>
         </div>
         <div className="space-y-1">
-          <Label>{t("version")}</Label>
-          <Input
+          <Label htmlFor="consent-version">{t("version")}</Label>
+          <Input id="consent-version"
             name="version"
             placeholder="v2"
             value={version}
@@ -96,8 +96,8 @@ export function PublishForm({ latest }: { latest: LatestDoc[] }) {
           />
         </div>
         <div className="space-y-1">
-          <Label>{t("language")}</Label>
-          <select
+          <Label htmlFor="consent-locale">{t("language")}</Label>
+          <select id="consent-locale"
             name="locale"
             value={locale}
             onChange={(e) => setLocale(e.target.value as ConsentLocale)}
@@ -111,8 +111,8 @@ export function PublishForm({ latest }: { latest: LatestDoc[] }) {
       </div>
 
       <div className="space-y-1">
-        <Label>{t("content")}</Label>
-        <textarea
+        <Label htmlFor="consent-contentMd">{t("content")}</Label>
+        <textarea id="consent-contentMd"
           name="contentMd"
           value={contentMd}
           onChange={(e) => setContentMd(e.target.value)}

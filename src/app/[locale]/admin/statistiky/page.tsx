@@ -70,7 +70,7 @@ export default async function AdminStatsPage({
         <h1 className="text-2xl font-bold">{t("statistics")} — {year}</h1>
         <div className="flex gap-2">
           <form className="flex gap-2">
-            <select name="year" className="rounded-md border px-3 py-1.5 text-sm" defaultValue={year}>
+            <select name="year" aria-label={t("year")} className="rounded-md border px-3 py-1.5 text-sm" defaultValue={year}>
               {[2024, 2025, 2026, 2027].map((y) => (
                 <option key={y} value={y}>{y}</option>
               ))}
